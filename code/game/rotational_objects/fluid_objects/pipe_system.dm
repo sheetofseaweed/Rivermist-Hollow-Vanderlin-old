@@ -84,8 +84,12 @@
 		pipe.propagate_change(check_id, null, 0, null, null)
 		pipe.providers = list()
 
+<<<<<<< HEAD
 /obj/structure/water_pipe/return_rotation_chat(atom/movable/screen/movable/mouseover/mouseover)
 	mouseover.maptext_height = 96
+=======
+/obj/structure/water_pipe/return_rotation_chat()
+>>>>>>> vanderlin/main
 	return "Pressure: [water_pressure]\n\
 			Fluid: [carrying_reagent ? initial(carrying_reagent.name) : "Nothing"]"
 

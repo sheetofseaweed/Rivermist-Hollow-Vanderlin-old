@@ -9,8 +9,13 @@
 	layer = GOD_HAND_LAYER
 	plane = GAME_PLANE_UPPER
 	pixel_z = DISPLACEMENT_AMOUNT
+<<<<<<< HEAD
 	//icon_w = ANIMATION_W
 	//icon_z = ANIMATION_Z
+=======
+	icon_w = ANIMATION_W
+	icon_z = ANIMATION_Z
+>>>>>>> vanderlin/main
 
 	var/atom/movable/thing_to_take
 

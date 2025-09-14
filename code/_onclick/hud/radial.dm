@@ -7,6 +7,7 @@ GLOBAL_LIST_EMPTY(radial_menus)
 	var/click_on_hover = FALSE
 	var/datum/radial_menu/parent
 
+<<<<<<< HEAD
 /atom/movable/screen/radial/handle_mouseover(location, control, params)
 	var/mob/p = usr
 	if(p.client)
@@ -31,6 +32,8 @@ GLOBAL_LIST_EMPTY(radial_menus)
 	return TRUE
 
 
+=======
+>>>>>>> vanderlin/main
 /atom/movable/screen/radial/proc/set_parent(new_value)
 	UnregisterSignal(parent, COMSIG_PARENT_QDELETING)
 	parent = new_value
@@ -276,22 +279,22 @@ GLOBAL_LIST_EMPTY(radial_menus)
 		// Fixed name assignment logic - prioritize choice_datum.name, then original key, then fallbacks
 		if(choice_datum?.name)
 			E.name = choice_datum.name
-			E.nomouseover = FALSE
+			E.no_over_text = FALSE
 		else if(choices_keys && choices_keys[choice_id])
 			// Use the stored original choice key
 			E.name = choices_keys[choice_id]
-			E.nomouseover = FALSE
+			E.no_over_text = FALSE
 		else if(istext(choices_values[choice_id]))
 			E.name = choices_values[choice_id]
-			E.nomouseover = FALSE
+			E.no_over_text = FALSE
 		else if(ispath(choices_values[choice_id],/atom))
 			var/atom/A = choices_values[choice_id]
 			E.name = initial(A.name)
-			E.nomouseover = FALSE
+			E.no_over_text = FALSE
 		else
 			var/atom/movable/AM = choices_values[choice_id] //Movables only
 			E.name = AM.name
-			E.nomouseover = FALSE
+			E.no_over_text = FALSE
 
 		E.choice = choice_id
 		E.maptext = null
