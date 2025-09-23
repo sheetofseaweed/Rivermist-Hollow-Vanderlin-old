@@ -22,13 +22,19 @@
 
 /datum/component/storage/concrete/grid/surgery_bag
 	screen_max_rows = 5
-	screen_max_columns = 4
+	screen_max_columns = 5
 	max_w_class = WEIGHT_CLASS_NORMAL
 
 /datum/component/storage/concrete/grid/belt
 	screen_max_rows = 3
 	screen_max_columns = 2
 	max_w_class = WEIGHT_CLASS_SMALL
+
+
+/datum/component/storage/concrete/grid/potion_belt
+	screen_max_rows = 3
+	screen_max_columns = 3
+	max_w_class = WEIGHT_CLASS_NORMAL
 
 /datum/component/storage/concrete/grid/coin_pouch
 	screen_max_rows = 4
