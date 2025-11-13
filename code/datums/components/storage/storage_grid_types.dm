@@ -22,7 +22,7 @@
 
 /datum/component/storage/concrete/grid/surgery_bag
 	screen_max_rows = 5
-	screen_max_columns = 5
+	screen_max_columns = 4
 	max_w_class = WEIGHT_CLASS_NORMAL
 
 /datum/component/storage/concrete/grid/belt
@@ -38,6 +38,7 @@
 	max_items = 8
 	attack_hand_interact = TRUE
 
+//проверка на тип предмета через открытый инвентарь
 /datum/component/storage/concrete/grid/potion_belt/New(datum/P, ...)
 	. = ..()
 	set_holdable(list(/obj/item/reagent_containers/glass/bottle))

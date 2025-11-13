@@ -147,12 +147,11 @@
 	sewrepair = TRUE
 	component_type = /datum/component/storage/concrete/grid/potion_belt
 
-
+//Проверка на тип предмета, что вкладывают в пояс рукой
 /obj/item/storage/belt/potion_belt/attackby(obj/item/B, mob/living/user, params)
 	if (!istype(B, /obj/item/reagent_containers/glass/bottle))
 		to_chat(user, span_warning("This belt only holds bottles!"))
 		return FALSE
-
 
 /obj/item/storage/belt/pouch
 	name = "pouch"
