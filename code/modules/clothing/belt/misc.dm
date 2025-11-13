@@ -263,7 +263,6 @@
 	alternate_worn_layer = UNDER_CLOAK_LAYER
 	component_type = /datum/component/storage/concrete/grid/satchel
 
-
 /obj/item/storage/backpack/satchel/cloth
 	name = "cloth knapsack"
 	desc = "A rudimentary cloth sack strapped to the back for storing small amounts of items."
@@ -393,8 +392,6 @@
 	sewrepair = TRUE
 	component_type = /datum/component/storage/concrete/grid/belt/knife_belt
 	empty_when_dropped = FALSE
-
-
 
 /obj/item/storage/belt/leather/knifebelt/attack_atom(atom/attacked_atom, mob/living/user)
 	if(!isturf(attacked_atom))
