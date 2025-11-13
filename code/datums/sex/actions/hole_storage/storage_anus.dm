@@ -1,6 +1,6 @@
 
 /datum/sex_action/hole_storage/anus
-	name = "Show anus contents"
+	name = "Store/remove in anus"
 	hole_id = ORGAN_SLOT_ANUS
 
 /datum/sex_action/hole_storage/anus/shows_on_menu(mob/living/carbon/human/user, mob/living/carbon/human/target)

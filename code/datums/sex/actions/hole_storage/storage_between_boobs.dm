@@ -1,6 +1,6 @@
 
 /datum/sex_action/hole_storage/boobs
-	name = "Show contents between boobs"
+	name = "Store/remove between boobs"
 	hole_id = ORGAN_SLOT_BREASTS
 
 /datum/sex_action/hole_storage/boobs/shows_on_menu(mob/living/carbon/human/user, mob/living/carbon/human/target)

@@ -20,13 +20,10 @@
 	if(user != target)
 		return FALSE
 	if(!check_location_accessible(user, user, BODY_ZONE_PRECISE_GROIN, TRUE))
-		to_chat(user, span_userdanger("if(!check_location_accessible(user, user, BODY_ZONE_PRECISE_GROIN, TRUE))"))
 		return FALSE
 	if(!user.getorganslot(ORGAN_SLOT_VAGINA))
-		to_chat(user, span_userdanger("if(!user.getorganslot(ORGAN_SLOT_VAGINA))"))
 		return FALSE
 	if(!get_sextoy_in_hand(user))
-		to_chat(user, span_userdanger("if(!get_sextoy_in_hand(user))"))
 		return FALSE
 	return TRUE
 

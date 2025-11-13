@@ -1,6 +1,6 @@
 
 /datum/sex_action/hole_storage/vagina
-	name = "Show vaginal contents"
+	name = "Store/remove in vagina"
 	hole_id = ORGAN_SLOT_VAGINA
 
 /datum/sex_action/hole_storage/vagina/shows_on_menu(mob/living/carbon/human/user, mob/living/carbon/human/target)
