@@ -147,14 +147,6 @@
 	sewrepair = TRUE
 	component_type = /datum/component/storage/concrete/grid/potion_belt
 
-//obj/item/storage/belt/potion_belt/proc/bottle_eat(obj/B)
-	//if(istype(B, /obj/item/reagent_containers/glass/bottle))
-	//	if (length(contents) < max_storage)
-	//		return SEND_SIGNAL(src, COMSIG_TRY_STORAGE_INSERT, B, null, FALSE)
-//	else
-	//	return FALSE
-//все работает, надо добавит запрет на вставку иных предметов при открытом инвентаре
-
 
 /obj/item/storage/belt/potion_belt/attackby(obj/item/B, mob/living/user, params)
 	if (!istype(B, /obj/item/reagent_containers/glass/bottle))
@@ -419,6 +411,7 @@
 		if(do_after(user, 5 DECISECONDS))
 			if(!eat_knife(knife))
 				break
+
 
 /obj/item/storage/belt/leather/knifebelt/proc/eat_knife(obj/A)
 	if(A.type in typesof(/obj/item/weapon/knife/throwingknife))
