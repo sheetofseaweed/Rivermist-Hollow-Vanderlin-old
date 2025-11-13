@@ -135,21 +135,27 @@
 	desc = "Belt with pockets and straps for potion bottles."
 	icon_state = "potion_belt"
 	item_state = "potion_belt"
-	var/empty_when_dropped = TRUE
+	strip_delay = 20
+	var/max_storage = 8
+	var/empty_when_dropped = FALSE
 	sewrepair = TRUE
 	component_type = /datum/component/storage/concrete/grid/potion_belt
-/obj/item/storage/belt/potion_belt/attack_atom(atom/attacked_atom, mob/living/user)
-	. = ..()
-	if (!isturf(attacked_atom))//хз че делает, но видимо надо
-		return ..()
 
-	. = TRUE
-	var/obj/G //объект что вставляется
-	if (G.type in typesof(/obj/item/reagent_containers) ) // не уверен, что будет работать, но вроде, должно
-		to_chat(user, span_warning("You put the bottle in the belt."))
-		//сюда надо что-то вставлять для того, чтобы оно поместилось в пояс или оно само?
-	to_chat(user, span_notice("You can't put [src.name] in belt!"))
-	return
+//obj/item/storage/belt/potion_belt/proc/bottle_eat(obj/B)
+	//if(istype(B, /obj/item/reagent_containers/glass/bottle))
+	//	if (length(contents) < max_storage)
+	//		return SEND_SIGNAL(src, COMSIG_TRY_STORAGE_INSERT, B, null, FALSE)
+//	else
+	//	return FALSE
+//все работает, надо добавит запрет на вставку иных предметов при открытом инвентаре
+
+
+/obj/item/storage/belt/potion_belt/attackby(obj/item/B, mob/living/user, params)
+	if (!istype(B, /obj/item/reagent_containers/glass/bottle))
+		to_chat(user, span_warning("This belt only holds bottles!"))
+		return FALSE
+
+
 /obj/item/storage/belt/pouch
 	name = "pouch"
 	desc = "Usually used for holding coins."

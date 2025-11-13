@@ -32,9 +32,15 @@
 
 
 /datum/component/storage/concrete/grid/potion_belt
-	screen_max_rows = 3
-	screen_max_columns = 3
+	screen_max_rows = 4
+	screen_max_columns = 4
 	max_w_class = WEIGHT_CLASS_NORMAL
+	max_items = 8
+	attack_hand_interact = TRUE
+
+/datum/component/storage/concrete/grid/potion_belt/New(datum/P, ...)
+	. = ..()
+	set_holdable(list(/obj/item/reagent_containers/glass/bottle))
 
 /datum/component/storage/concrete/grid/coin_pouch
 	screen_max_rows = 4
