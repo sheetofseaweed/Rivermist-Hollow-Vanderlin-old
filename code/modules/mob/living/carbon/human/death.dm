@@ -57,10 +57,10 @@
 			if(mind.has_antag_datum(/datum/antagonist/zombie) || mind.has_antag_datum(/datum/antagonist/skeleton) || mind.has_antag_datum(/datum/antagonist/lich))
 				record_round_statistic(STATS_DEADITES_KILLED)
 
-	if(!gibbed)
+	/*if(!gibbed)
 		if(!has_world_trait(/datum/world_trait/necra_requiem))
 			if(!is_in_roguetown(src) || has_world_trait(/datum/world_trait/zizo_defilement))
-				zombie_check()
+				zombie_check()*/
 
 	stop_sound_channel(CHANNEL_HEARTBEAT)
 	var/obj/item/organ/heart/H = getorganslot(ORGAN_SLOT_HEART)
@@ -98,8 +98,6 @@
 
 		if(!gibbed && yeae)
 			for(var/mob/living/carbon/human/HU in viewers(7, src))
-				if(HU.RomanticPartner(src))
-					HU.adjust_triumphs(-1)
 				if(HU != src && !HAS_TRAIT(HU, TRAIT_BLIND))
 					if(!HAS_TRAIT(HU, TRAIT_VILLAIN)) //temporary measure for npc skeletons
 						if(HU.dna?.species && dna?.species)
@@ -144,8 +142,6 @@
 		if(CA != src && !HAS_TRAIT(CA, TRAIT_BLIND))
 			if(HAS_TRAIT(CA, TRAIT_STEELHEARTED))
 				continue
-			if(CA.RomanticPartner(src))
-				CA.adjust_triumphs(-1)
 			var/mob/living/carbon/V = CA
 			if(V.has_flaw(/datum/charflaw/addiction/maniac))
 				V.add_stress(/datum/stress_event/viewgibmaniac)

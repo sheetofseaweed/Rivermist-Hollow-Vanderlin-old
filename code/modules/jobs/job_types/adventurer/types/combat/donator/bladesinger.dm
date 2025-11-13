@@ -1,16 +1,15 @@
-/datum/advclass/combat/bladesinger
-	name = "Bladesinger"
+/datum/job/advclass/combat/bladesinger
+	title = "Bladesinger"
 	tutorial = "Your vigil over the elven cities has long since ended. Though dutiful, the inevitable happened and now you hope these lands have use for your talents."
 	allowed_races = list(SPEC_ID_ELF)
-	maximum_possible_slots = 1
-	pickprob = 15
-	outfit = /datum/outfit/job/adventurer/bladesinger
+	total_positions = 1
+	roll_chance = 15
+	outfit = /datum/outfit/adventurer/bladesinger
 	category_tags = list(CTAG_ADVENTURER)
 	min_pq = 2
 	cmode_music = 'sound/music/cmode/adventurer/CombatWarrior.ogg'
 
-
-/datum/outfit/job/adventurer/bladesinger/pre_equip(mob/living/carbon/human/H)
+/datum/outfit/adventurer/bladesinger/pre_equip(mob/living/carbon/human/H)
 	..()
 	if(H.mind)
 		H.adjust_skillrank(/datum/skill/combat/knives, 2, TRUE)
@@ -25,10 +24,10 @@
 		H.change_stat(STATKEY_STR, 1) // Same stat spread as lancer/swordmaster, but gets a small bonus to speed instead of a malus, at the cost of getting no constitution bonus
 		H.change_stat(STATKEY_END, 1)
 		H.change_stat(STATKEY_SPD, 1)
-	if(H.gender == FEMALE)
+	/*if(H.gender == FEMALE)
 		H.underwear = "Femleotard"
 		H.underwear_color = CLOTHING_SOOT_BLACK
-		H.update_body()
+		H.update_body()*/
 	pants = /obj/item/clothing/pants/tights/colored/black
 	backr = /obj/item/weapon/sword/long/greatsword/elfgsword
 	beltl = /obj/item/storage/belt/pouch/coins/mid

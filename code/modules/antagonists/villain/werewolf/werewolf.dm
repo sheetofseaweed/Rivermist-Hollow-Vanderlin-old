@@ -23,8 +23,10 @@
 
 	innate_traits = list(
 		TRAIT_STRONGBITE,
-		TRAIT_BESTIALSENSE
+		TRAIT_BESTIALSENSE,
+		TRAIT_BRUSHWALK
 	)
+	var/forced_transform = FALSE
 
 /datum/antagonist/werewolf/lesser
 	name = "Lesser Werevolf"
@@ -54,12 +56,14 @@
 		forge_werewolf_objectives()
 
 	wolfname = "[pick(strings("werewolf_names.json", "wolf_prefixes"))] [pick(strings("werewolf_names.json", "wolf_suffixes"))]"
+	owner.current.verbs |= /mob/living/carbon/human/proc/toggle_werewolf_transform
 	return ..()
 
 /datum/antagonist/werewolf/on_removal()
 	if(!silent && owner.current)
 		to_chat(owner.current,span_danger("I am no longer a [special_role]!"))
 	owner.special_role = null
+	owner.current.verbs -= /mob/living/carbon/human/proc/toggle_werewolf_transform
 	return ..()
 
 /datum/antagonist/werewolf/proc/add_objective(datum/objective/O)
@@ -101,6 +105,8 @@
 	if(mind.has_antag_datum(/datum/antagonist/werewolf))
 		return FALSE
 	if(mind.has_antag_datum(/datum/antagonist/skeleton))
+		return FALSE
+	if(HAS_TRAIT(src, TRAIT_SILVER_BLESSED))
 		return FALSE
 	return TRUE
 
@@ -218,3 +224,25 @@
 	. = ..()
 	ADD_TRAIT(src, TRAIT_NODROP, TRAIT_GENERIC)
 	ADD_TRAIT(src, TRAIT_NOEMBED, TRAIT_GENERIC)
+
+/mob/living/carbon/human/proc/toggle_werewolf_transform()
+	set name = "Toggle Transformation"
+	set category = "WEREWOLF"
+	var/datum/antagonist/werewolf/ww = mind.has_antag_datum(/datum/antagonist/werewolf)
+	if(isnull(ww))
+		to_chat(src, span_warning("You are not a werewolf!"))
+		return
+	if(ww.forced_transform)
+		ww.forced_transform = FALSE
+	else
+		ww.forced_transform = TRUE
+	if(!ww.transformed && ww.forced_transform)
+		flash_fullscreen("redflash3")
+		werewolf_transform()
+		ww.transformed = TRUE
+	else if(ww.transformed)
+		werewolf_untransform()
+		flash_fullscreen("redflash3")
+		ww.transformed = FALSE
+		Stun(30)
+		Knockdown(30)

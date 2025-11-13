@@ -420,6 +420,7 @@ GLOBAL_LIST_EMPTY(respawncounts)
 		return null
 
 	GLOB.clients += src
+	GLOB.keys_by_ckey[ckey] += key
 	GLOB.directory[ckey] = src
 
 	chatOutput = new /datum/chatOutput(src)
@@ -527,10 +528,6 @@ GLOBAL_LIST_EMPTY(respawncounts)
 
 
 	. = ..()	//calls mob.Login()
-	if (length(GLOB.stickybanadminexemptions))
-		GLOB.stickybanadminexemptions -= ckey
-		if (!length(GLOB.stickybanadminexemptions))
-			restore_stickybans()
 
 	if (byond_version >= 512)
 		if (!byond_build || byond_build < 1386)
@@ -756,7 +753,7 @@ GLOBAL_LIST_EMPTY(respawncounts)
 	log_access("Logout: [key_name(src)]")
 	GLOB.ahelp_tickets.ClientLogout(src)
 
-	if(credits)
+	if(length(credits))
 		QDEL_LIST(credits)
 
 	if(player_details)
@@ -1110,6 +1107,8 @@ GLOBAL_LIST_EMPTY(respawncounts)
 	return failed
 
 /client/Click(atom/object, atom/location, control, params)
+	if(SEND_SIGNAL(src, COMSIG_CLIENT_CLICK_DIRTY, object, location, control, params, usr))
+		return
 	if(isatom(object) && HAS_TRAIT(mob, TRAIT_IN_FRENZY))
 		return
 

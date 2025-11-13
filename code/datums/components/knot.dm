@@ -62,7 +62,7 @@
 	// Check if user is aroused enough
 	var/list/arousal_data = list()
 	SEND_SIGNAL(user, COMSIG_SEX_GET_AROUSAL, arousal_data)
-	if(arousal_data["arousal"] < AROUSAL_HARD_ON_THRESHOLD)
+	if(arousal_data["arousal"] < VISIBLE_AROUSAL_THRESHOLD)
 		if(!knotted_status)
 			to_chat(user, span_notice("My knot was too soft to tie."))
 		if(knotted_recipient != target) // Only notify if this target isn't already knotted by us
@@ -124,7 +124,7 @@
 	if(force_level > SEX_FORCE_MID)
 		var/datum/component/arousal/target_arousal = target.GetComponent(/datum/component/arousal)
 		if(force_level == SEX_FORCE_EXTREME)
-			target.apply_damage(30, BRUTE, BODY_ZONE_CHEST)
+			//target.apply_damage(30, BRUTE, BODY_ZONE_CHEST)
 			target_arousal?.try_do_pain_effect(PAIN_HIGH_EFFECT, FALSE)
 		else
 			target_arousal?.try_do_pain_effect(PAIN_MILD_EFFECT, FALSE)
@@ -231,7 +231,7 @@
 /datum/component/knotting/proc/should_remove_knot_on_movement(mob/living/carbon/human/top, mob/living/carbon/human/btm)
 	var/list/arousal_data = list()
 	SEND_SIGNAL(top, COMSIG_SEX_GET_AROUSAL, arousal_data)
-	if(arousal_data["arousal"] < AROUSAL_HARD_ON_THRESHOLD)
+	if(arousal_data["arousal"] < VISIBLE_AROUSAL_THRESHOLD)
 		knot_remove()
 		return TRUE
 
@@ -240,9 +240,9 @@
 		return FALSE
 
 	if(dist > 1)
-		if(dist > 10)
-			if(knot_movement_mods_remove_penis(top, btm))
-				return TRUE
+		//if(dist > 10)
+		//	if(knot_movement_mods_remove_penis(top, btm))
+		//		return TRUE
 		knot_remove(forceful_removal = TRUE)
 		return TRUE
 
@@ -311,15 +311,15 @@
 
 	var/list/arousal_data = list()
 	SEND_SIGNAL(top, COMSIG_SEX_GET_AROUSAL, arousal_data)
-	if(arousal_data["arousal"] < AROUSAL_HARD_ON_THRESHOLD)
+	if(arousal_data["arousal"] < VISIBLE_AROUSAL_THRESHOLD)
 		knot_remove()
 		return
 
 	var/dist = get_dist(top, btm)
 	if(dist > 2)
-		if(dist > 10)
-			if(knot_movement_mods_remove_penis(top, btm))
-				return
+		//if(dist > 10)
+		//	if(knot_movement_mods_remove_penis(top, btm))
+		//		return
 		knot_remove(forceful_removal = TRUE)
 		return
 
@@ -356,7 +356,7 @@
 		return
 	btm.face_atom(top)
 
-/datum/component/knotting/proc/knot_movement_mods_remove_penis(mob/living/carbon/human/top, mob/living/carbon/human/btm)
+/*/datum/component/knotting/proc/knot_movement_mods_remove_penis(mob/living/carbon/human/top, mob/living/carbon/human/btm)
 	var/obj/item/organ/genitals/penis/penor = top.getorganslot(ORGAN_SLOT_PENIS)
 	if(!penor)
 		return FALSE
@@ -369,7 +369,7 @@
 	to_chat(btm, span_userdanger("You feel their knot withdraw faster than you can process!"))
 	knot_remove(forceful_removal = TRUE, notify = FALSE)
 	log_combat(btm, top, "Top had their cock ripped off (knot tugged too far)")
-	return TRUE
+	return TRUE*/
 
 /datum/component/knotting/proc/knot_remove(forceful_removal = FALSE, notify = TRUE, keep_top_status = FALSE, keep_btm_status = FALSE)
 	var/mob/living/carbon/human/top = knotted_owner
@@ -392,7 +392,7 @@
 			if(notify && !keep_btm_status && !btm.has_status_effect(/datum/status_effect/knot_gaped))
 				btm.apply_status_effect(/datum/status_effect/knot_gaped)
 
-		btm.apply_damage(damage, BRUTE, BODY_ZONE_CHEST)
+		//btm.apply_damage(damage, BRUTE, BODY_ZONE_CHEST)
 		btm.Stun(80)
 		playsound(btm, 'sound/misc/mat/pop.ogg', 100, TRUE, -2, ignore_walls = FALSE)
 		playsound(top, 'sound/misc/mat/segso.ogg', 50, TRUE, -2, ignore_walls = FALSE)

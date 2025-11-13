@@ -587,7 +587,7 @@
 	var/mob/living/carbon/human/H = quirk_holder
 	var/datum/antagonist/vampirelord/lesser/secret/new_antag = new ()
 	H.mind.add_antag_datum(new_antag)
-*/
+
 /datum/antagonist/vampirelord/lesser/secret
 	//ashes = FALSE
 	//is_solo = TRUE
@@ -605,7 +605,7 @@
 	return
 
 /datum/antagonist/vampirelord/lesser/secret/move_to_spawnpoint()
-	return
+	return*/
 /*
 /datum/quirk/hypersensitivity
 	name = "Hypersensitivity"

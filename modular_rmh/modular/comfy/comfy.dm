@@ -28,29 +28,28 @@
 /atom/movable/screen/alert/status_effect/buff/comfy
 	name = "I feel at peace"
 	desc = "You are so comfortable that you don't really feel like eating or drinking. Strange."
-	icon_state = "revived"
+	icon_state = "stressvgood"
 
 
 /datum/status_effect/buff/comfy/on_apply()
 	. = ..()
 	ADD_TRAIT(owner, TRAIT_NOHUNGER, TRAIT_GENERIC)
-	owner.add_stress(/datum/stressevent/comfy)
-	
+	owner.add_stress(/datum/stress_event/comfy)
+
 
 /datum/status_effect/buff/comfy/on_remove()
 	. = ..()
 	REMOVE_TRAIT(owner, TRAIT_NOHUNGER, TRAIT_GENERIC)
-	owner.remove_stress(/datum/stressevent/comfy)
-	
+	owner.remove_stress(/datum/stress_event/comfy)
 
-/datum/status_effect/buff/comfy/process()
-	. = ..()
+
+/datum/status_effect/buff/comfy/tick()
 	var/mob/living/carbon/human/bob = owner
-	bob.hydration = HYDRATION_LEVEL_HYDRATED
+	bob.hydration = HYDRATION_LEVEL_FULL
 	bob.nutrition = NUTRITION_LEVEL_WELL_FED
 	bob.comfy_heal()
 
-/datum/stressevent/comfy
+/datum/stress_event/comfy
 	timer = INFINITY
 	desc = "<span class='nicegreen'>I'm so comfortable and peaceful!</span>\n"
-	stressadd = -10
+	stress_change = -10

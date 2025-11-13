@@ -24,6 +24,12 @@
 
 	var/static/sex_id = 0
 	var/our_sex_id = 0 //this is so we can have more then 1 sex id open at once
+	/// Level of pleasure resistance
+	var/resistance_to_pleasure = RESIST_NONE
+	/// Level of edging others
+	var/edging_other = FALSE
+
+	var/datum/ui_updater/session_updater
 
 /datum/sex_session/New(mob/living/carbon/human/session_user, mob/living/carbon/human/session_target)
 	user = session_user
@@ -34,15 +40,21 @@
 
 	RegisterSignal(user, COMSIG_SEX_CLIMAX, PROC_REF(on_climax))
 
+	add_ui_tracking("sexcon[our_sex_id]")
+
 	addtimer(CALLBACK(src, PROC_REF(check_sex)), 60 SECONDS, flags = TIMER_LOOP)
 
 /datum/sex_session/Destroy(force, ...)
-	UnregisterSignal(user, COMSIG_SEX_CLIMAX)
+	UnregisterSignal(user, list(COMSIG_SEX_CLIMAX, COMSIG_SEX_AROUSAL_CHANGED))
 	// Remove from collective
+	if(session_updater)
+		qdel(session_updater)
+		session_updater = null
+
 	if(collective)
 		collective.sessions -= src
 		// If this was the last session in the collective, remove the collective
-		if(!collective.sessions.len)
+		if(!length(collective.sessions))
 			collective.unregister_collective_tab()
 			LAZYREMOVE(GLOB.sex_collectives, collective)
 			qdel(collective)
@@ -71,6 +83,32 @@
 	if(inactivity < 3)
 		return
 	qdel(src)
+
+/datum/sex_session/proc/add_ui_tracking(window_id)
+	session_updater = new /datum/ui_updater(user, window_id, src, FALSE)
+
+	session_updater.track_property("arousal_data", "updateProgressBars", variable = FALSE)
+	RegisterSignal(user, COMSIG_SEX_AROUSAL_CHANGED, PROC_REF(on_arousal_changed), TRUE)
+
+	session_updater.start_updates()
+
+/datum/sex_session/proc/on_arousal_changed()
+    if(session_updater)
+        var/arousal_string = get_arousal_data_string()
+        session_updater.push_data_change("arousal_data", arousal_string)
+
+/datum/sex_session/proc/get_arousal_data_string()
+	var/list/arousal_data = list()
+	SEND_SIGNAL(user, COMSIG_SEX_GET_AROUSAL, arousal_data)
+
+	var/max_arousal = MAX_AROUSAL || 120
+	var/orgasm_threshold = PASSIVE_EJAC_THRESHOLD
+	var/current_arousal = arousal_data["arousal"] || 0
+	var/arousal_percent = min(100, (current_arousal / max_arousal) * 100)
+	var/pleasure_percent = min(100, (current_arousal / orgasm_threshold) * 100)
+	var/pain_percent = 0
+
+	return "[arousal_percent],[pleasure_percent],[pain_percent]"
 
 /datum/sex_session/proc/check_climax()
 	var/list/arousal_data = list()
@@ -109,7 +147,7 @@
 	var/list/arousal_data = list()
 	SEND_SIGNAL(limper, COMSIG_SEX_GET_AROUSAL, arousal_data)
 	var/arousal_value = arousal_data["arousal"]
-	if(arousal_value >= AROUSAL_HARD_ON_THRESHOLD)
+	if(arousal_value >= VISIBLE_AROUSAL_THRESHOLD)
 		return FALSE
 	return TRUE
 
@@ -191,7 +229,43 @@
 	return TRUE
 
 /datum/sex_session/proc/perform_sex_action(mob/living/carbon/human/action_target, arousal_amt, pain_amt, giving)
-	SEND_SIGNAL(action_target, COMSIG_SEX_RECEIVE_ACTION, arousal_amt, pain_amt, giving, force, speed)
+	var/list/arousal_data_user = list()
+	SEND_SIGNAL(user, COMSIG_SEX_GET_AROUSAL, arousal_data_user)
+	var/list/arousal_data_target = list()
+	SEND_SIGNAL(action_target, COMSIG_SEX_GET_AROUSAL, arousal_data_target)
+
+	if(HAS_TRAIT(user, TRAIT_GOODLOVER))
+		arousal_amt *= 1.5
+		if(prob(10)) //10 perc chance each action to emit the message so they know who the fuckin' wituser.
+			var/lovermessage = pick("This feels so good!","I am in nirvana!","This is too good to be possible!","By the Gods!","I can't stop, too good!~")
+			to_chat(action_target, span_love(lovermessage))
+	var/res_send = RESIST_NONE
+	if(action_target == user)
+		res_send = arousal_data_user["resistance_to_pleasure"]
+	else
+		res_send = arousal_data_target["resistance_to_pleasure"]
+
+	var/edge_other = FALSE
+	if(action_target != user && edging_other)
+		if(arousal_data_target["arousal"] >= AROUSAL_EDGING_THRESHOLD + 15)
+			var/succes_chance = 100
+			if(prob(5))
+				to_chat(user, span_love("I try to match my movements so that they don't climax too soon..."))
+			if(speed > SEX_SPEED_MID || force > SEX_FORCE_MID)
+				succes_chance *= 0.5
+			if(action_target.has_status_effect(/datum/status_effect/edging_overstimulation))
+				succes_chance *= 0.3
+				if(prob(10))
+					to_chat(user, span_love("They are just too sensitive for me to control their pleasure..."))
+			if(user.get_stat_level(STATKEY_PER) < 7)
+				succes_chance *= 0.7
+				if(prob(10))
+					to_chat(user, span_love("I can't tell if they are close or not..."))
+			if(prob(succes_chance))
+				edge_other = TRUE
+
+
+	SEND_SIGNAL(action_target, COMSIG_SEX_RECEIVE_ACTION, arousal_amt, pain_amt, giving, force, speed, res_send, edge_other)
 
 /datum/sex_session/proc/handle_passive_ejaculation(mob/living/carbon/human/handler)
 	if(!handler)
@@ -216,6 +290,24 @@
 			if(arousal_value < ACTIVE_EJAC_THRESHOLD)
 				SEND_SIGNAL(handler, COMSIG_SEX_ADJUST_AROUSAL, 0.25)
 
+/datum/sex_session/proc/perform_deepthroat_oxyloss(mob/living/action_target, oxyloss_amt)
+	var/oxyloss_multiplier = 0
+	switch(force)
+		if(SEX_FORCE_LOW)
+			oxyloss_multiplier = 0
+		if(SEX_FORCE_MID)
+			oxyloss_multiplier = 0
+		if(SEX_FORCE_HIGH)
+			oxyloss_multiplier = 0.5
+		if(SEX_FORCE_EXTREME)
+			oxyloss_multiplier = 1.0
+	oxyloss_amt *= oxyloss_multiplier
+	if((oxyloss_amt <= 0) || (action_target.getOxyLoss() > 30))
+		return
+	action_target.adjustOxyLoss(oxyloss_amt)
+	// Indicate someone is choking through sex
+	if(action_target.oxyloss >= 25 && prob(33))
+		action_target.emote(pick(list("gag", "choke", "gasp")), forced = TRUE)
 
 /datum/sex_session/proc/get_speed_multiplier()
 	switch(speed)
@@ -244,6 +336,9 @@
 
 /datum/sex_session/proc/adjust_force(amt)
 	force = clamp(force + amt, SEX_FORCE_MIN, SEX_FORCE_MAX)
+
+/datum/sex_session/proc/adjust_resist(amt)
+	resistance_to_pleasure = clamp(resistance_to_pleasure + amt, RESIST_NONE, RESIST_HIGH)
 
 /datum/sex_session/proc/finished_check()
 	if(!do_until_finished)
@@ -312,6 +407,17 @@
 			return "<span class='love_high'>[string]</span>"
 		if(SEX_FORCE_EXTREME)
 			return "<span class='love_extreme'>[string]</span>"
+
+/datum/sex_session/proc/get_resist_string()
+	switch(resistance_to_pleasure)
+		if(RESIST_NONE)
+			return "<font color='#eac8de'>NONE</font>"
+		if(RESIST_LOW)
+			return "<font color='#e9a8d1'>LOW</font>"
+		if(RESIST_MEDIUM)
+			return "<font color='#f05ee1'>MEDIUM</font>"
+		if(RESIST_HIGH)
+			return "<font color='#d146f5'>HIGH</font>"
 
 /datum/sex_session/proc/get_force_sound()
 	switch(force)
@@ -451,13 +557,14 @@
 
 	dat += "<div class='progress-container'>"
 	var/max_arousal = MAX_AROUSAL
+	var/orgasm_threshold = PASSIVE_EJAC_THRESHOLD
 	var/current_arousal = arousal_data["arousal"] || 0
-	var/pleasure_percent = min(100, (current_arousal / max_arousal) * 100)
+	var/pleasure_percent = min(100, (current_arousal / orgasm_threshold) * 100)
 	var/arousal_percent = min(100, (current_arousal / max_arousal) * 100)
 
 	dat += "<div class='progress-bar'>"
 	dat += "<div class='progress-fill-pleasure' style='width: [pleasure_percent]%;'></div>"
-	dat += "<div class='progress-label'>Pleasure</div>"
+	dat += "<div class='progress-label'>Orgasm</div>"
 	dat += "</div>"
 
 	dat += "<div class='progress-bar'>"
@@ -522,8 +629,10 @@
 
 	var/current_speed = get_current_speed()
 	var/current_force = get_current_force()
+	var/current_resist = get_current_resist()
 	var/speed_name = get_speed_string()
 	var/force_name = get_force_string()
+	var/resist_name = get_resist_string()
 	var/manual_arousal_name = get_manual_arousal_string()
 
 	// Speed slider
@@ -560,6 +669,27 @@
 	dat += "<div class='slider-value'>[force_name]</div>"
 	dat += "</div>"
 
+	// Holding slider
+	dat += "<div class='slider-container'>"
+	dat += "<div class='slider-label'>Holding pleasure:</div>"
+	dat += "<div class='slider-wrapper'>"
+	dat += "<div class='slider-track'>"
+	dat += "<div class='slider-fill' style='width: [((current_resist - RESIST_NONE) / (RESIST_HIGH - RESIST_NONE)) * 100]%;'></div>"
+	dat += "</div>"
+	dat += "<div class='slider-notches'>"
+	for(var/i = RESIST_NONE; i <= RESIST_HIGH; i++)
+		var/notch_position = ((i - RESIST_NONE) / (RESIST_HIGH - RESIST_NONE)) * 100
+		var/notch_class = (i <= current_resist) ? "slider-notch active" : "slider-notch"
+		dat += "<a href='?src=[REF(src)];task=set_resist;value=[i];tab=[selected_tab]' class='[notch_class]' style='left: [notch_position]%;'></a>"
+	dat += "</div>"
+	dat += "</div>"
+	dat += "<div class='slider-value'>[resist_name]</div>"
+	dat += "</div>"
+
+	dat += "<div class='control-row'>"
+	dat += "<a href='?src=[REF(src)];task=toggle_edging_other;tab=[selected_tab]' class='toggle-btn'>[edging_other ? "EDGE OTHER" : "LET OTHER FINISH"]</a>"
+	dat += "</div>"
+
 	if(user.getorganslot(ORGAN_SLOT_PENIS))
 		dat += "<div class='control-row'>"
 		dat += "<a href='?src=[REF(src)];task=manual_arousal_down;tab=[selected_tab]' class='control-btn'><</a>"
@@ -571,10 +701,11 @@
 	dat += "<a href='?src=[REF(src)];task=toggle_finished;tab=[selected_tab]' class='toggle-btn'>[do_until_finished ? "UNTIL IM FINISHED" : "UNTIL I STOP"]</a>"
 	dat += "</div>"
 
-	dat += "<div class='control-row'>"
+	/*dat += "<div class='control-row'>"
 	dat += "<a href='?src=[REF(src)];task=set_arousal;tab=[selected_tab]' class='toggle-btn'>SET AROUSAL</a>"
 	dat += "<a href='?src=[REF(src)];task=freeze_arousal;tab=[selected_tab]' class='toggle-btn'>[arousal_data["frozen"] ? "UNFREEZE AROUSAL" : "FREEZE AROUSAL"]</a>"
-	dat += "</div>"
+	dat += "</div>"*/
+
 	dat += "</div>"
 	dat += "</div>"
 
@@ -599,7 +730,22 @@
 	dat += "</div>"
 
 	// JavaScript for search functionality and tab management
-	dat += "<script>"
+	dat += "<script type=\"text/javascript\">"
+
+	dat +="function updateProgressBars(dataString) {"
+	dat +=	"var values = dataString.split(',');"
+	dat +=	"var arousalPercent = parseFloat(values\[0\]) || 0;"
+	dat +=	"var pleasurePercent = parseFloat(values\[1\]) || 0;"
+	dat +=	"var painPercent = parseFloat(values\[2\]) || 0;"
+
+	dat +=	"var arousalBar = document.querySelector('.progress-fill-arousal');"
+	dat +=	"var pleasureBar = document.querySelector('.progress-fill-pleasure');"
+	dat +=	"var painBar = document.querySelector('.progress-fill-pain');"
+
+	dat +=	"if(arousalBar) arousalBar.style.width = arousalPercent + '%';"
+	dat +=	"if(pleasureBar) pleasureBar.style.width = pleasurePercent + '%';"
+	dat +=	"if(painBar) painBar.style.width = painPercent + '%';"
+	dat +=	"}"
 
 	dat += "function switchNotesTab(tabName) {"
 	dat += "  var contents = document.querySelectorAll('.notes-tab-content');"
@@ -836,6 +982,10 @@
 			var/new_force = text2num(href_list["value"])
 			if(new_force >= SEX_FORCE_MIN && new_force <= SEX_FORCE_MAX)
 				set_current_force(new_force)
+		if("set_resist")
+			var/new_resist = text2num(href_list["value"])
+			if(new_resist >= RESIST_NONE && new_resist <= RESIST_HIGH)
+				set_current_resist(new_resist)
 		if("speed_up")
 			adjust_speed(1)
 		if("speed_down")
@@ -844,6 +994,10 @@
 			adjust_force(1)
 		if("force_down")
 			adjust_force(-1)
+		if("resist_up")
+			adjust_resist(1)
+		if("resist_down")
+			adjust_resist(-1)
 		if("toggle_finished")
 			do_until_finished = !do_until_finished
 		if("set_arousal")
@@ -851,6 +1005,8 @@
 			SEND_SIGNAL(user, COMSIG_SEX_SET_AROUSAL, amount)
 		if("freeze_arousal")
 			SEND_SIGNAL(user, COMSIG_SEX_FREEZE_AROUSAL)
+		if("toggle_edging_other")
+			edging_other = !edging_other
 
 		if("update_session_name")
 			var/new_name = url_decode(href_list["name"])
@@ -1110,11 +1266,18 @@
 /datum/sex_session/proc/get_current_force()
 	return force || SEX_FORCE_LOW
 
+/datum/sex_session/proc/get_current_resist()
+	return resistance_to_pleasure || RESIST_NONE
+
 /datum/sex_session/proc/set_current_speed(new_speed)
 	speed = clamp(new_speed, SEX_SPEED_MIN, SEX_SPEED_MAX)
 
 /datum/sex_session/proc/set_current_force(new_force)
 	force = clamp(new_force, SEX_FORCE_MIN, SEX_FORCE_MAX)
+
+/datum/sex_session/proc/set_current_resist(new_resist)
+	resistance_to_pleasure = clamp(new_resist, RESIST_NONE, RESIST_HIGH)
+	SEND_SIGNAL(user, COMSIG_SEX_SET_HOLDING, resistance_to_pleasure)
 
 /datum/sex_session/proc/get_character_slot(mob/target_mob)
 	return target_mob?.client?.prefs.current_slot || 1

@@ -20,6 +20,10 @@
 	default_color = "FFFFFF"
 
 	species_traits = list(EYECOLOR, HAIR, FACEHAIR, LIPS, STUBBLE, OLDGREY)
+	inherent_traits = list(TRAIT_NOMOBSWAP)
+	inherent_skills = list(
+		/datum/skill/misc/music = 1,
+	)
 
 	use_skintones = TRUE
 	possible_ages = NORMAL_AGES_LIST_CHILD
@@ -30,6 +34,9 @@
 
 	soundpack_m = /datum/voicepack/male
 	soundpack_f = /datum/voicepack/female
+
+	//related to preening emote - lets preening be used roundstart
+	COOLDOWN_DECLARE(time_to_next_preen)
 
 	offset_features_m = list(
 		OFFSET_RING = list(0,1),\
@@ -104,6 +111,9 @@
 		/datum/customizer/bodypart_feature/hair/facial/humanoid,
 		/datum/customizer/bodypart_feature/accessory,
 		/datum/customizer/bodypart_feature/face_detail,
+		/datum/customizer/bodypart_feature/underwear,
+		/datum/customizer/bodypart_feature/legwear,
+		/datum/customizer/bodypart_feature/piercing,
 		/datum/customizer/organ/tail/harpy,
 		/datum/customizer/organ/wings/harpy,
 		/datum/customizer/organ/genitals/penis/human,
@@ -127,6 +137,38 @@
 		/datum/descriptor_choice/prominent_three_wild,
 		/datum/descriptor_choice/prominent_four_wild,
 	)
+	body_markings = list(
+		/datum/body_marking/tonage,
+		/datum/body_marking/womb_tattoo,
+		/datum/body_marking/butterfly,
+		/datum/body_marking/waist,
+		/datum/body_marking/diagonal_eyes,
+		/datum/body_marking/wide_eyes,
+		/datum/body_marking/stripes,
+		/datum/body_marking/plain,
+		/datum/body_marking/spotted,
+		/datum/body_marking/tiger,
+		/datum/body_marking/tiger/dark,
+		/datum/body_marking/sock,
+		/datum/body_marking/sock/tertiary,
+		/datum/body_marking/socklonger,
+		/datum/body_marking/tips,
+		/datum/body_marking/bellyscale,
+		/datum/body_marking/kobold_scale,
+		/datum/body_marking/bellyscaleslim,
+		/datum/body_marking/bellyscalesmooth,
+		/datum/body_marking/bellyscaleslimsmooth,
+		/datum/body_marking/buttscale,
+		/datum/body_marking/belly,
+		/datum/body_marking/bellyslim,
+		/datum/body_marking/tie,
+		/datum/body_marking/butt,
+		/datum/body_marking/tiesmall,
+		/datum/body_marking/backspots,
+		/datum/body_marking/front,
+		/datum/body_marking/flushed_cheeks,
+		/datum/body_marking/eyeliner,
+	)
 
 /datum/species/harpy/get_hairc_list()
 	return sortList(list(
@@ -141,6 +183,8 @@
 	"red - cardinal" = "822b2b",
 
 	"grey - osprey" = "7c828a",
+
+	"orange - oriole" = "d55f2a",
 
 	"white - swan" = "d3d9e3",
 	"white - egret" = "dee9ed",

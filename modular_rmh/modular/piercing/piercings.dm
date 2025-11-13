@@ -21,7 +21,7 @@
 				piercings_new.set_accessory_type(sprite_acc, color, H)
 				piercings_feature = piercings_new
 			user.visible_message(span_notice("[user] tries to put [src] on [H]..."))
-			if(do_after(user, 50, needhand = 1, target = H))
+			if(do_after(user, 50, target = H))
 				var/obj/item/bodypart/chest = H.get_bodypart(BODY_ZONE_CHEST)
 				chest.add_bodypart_feature(piercings_feature)
 				user.dropItemToGround(src)

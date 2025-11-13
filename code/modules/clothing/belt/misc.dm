@@ -45,7 +45,13 @@
 		/obj/item/key/forrestgarrison,
 	)
 
-//Bandit's belt starts with a bandage and a key to their guildhall.
+/obj/item/storage/belt/leather/townguard //they get their keys + dagger there
+	populate_contents = list(
+		/obj/item/weapon/knife/dagger/steel/special,
+		/obj/item/storage/keyring/guard,
+	)
+
+// Bandit's belt starts with a bandage and a key to their guildhall.
 /obj/item/storage/belt/leather/mercenary
 	populate_contents = list(
 		/obj/item/natural/cloth,
@@ -280,6 +286,12 @@
 		/obj/item/paper/heartfelt,
 	)
 
+/obj/item/storage/backpack/satchel/otavan
+	name = "grenzelhoftian leather satchel"
+	desc = "A made to last leather bag from the Psydonian heart of Grenzelhoft. It's Grenzelhoft's finest."
+	icon_state = "osatchel"
+	item_state = "osatchel"
+
 /obj/item/storage/backpack/satchel/mule/PopulateContents()
 	for(var/i in 1 to 3)
 		switch(rand(1,4))
@@ -309,6 +321,10 @@
 	bloody_icon_state = "bodyblood"
 	component_type = /datum/component/storage/concrete/grid/backpack
 
+/obj/item/storage/backpack/backpack/Initialize()
+	. = ..()
+	ADD_TRAIT(src, TRAIT_HARD_TO_STEAL, TRAIT_GENERIC)
+
 /obj/item/storage/backpack/backpack/artibackpack
 	name = "cooling backpack"
 	desc = "A leather backpack with complex bronze pipework coursing through it. It hums and vibrates constantly."
@@ -317,6 +333,12 @@
 	resistance_flags = FIRE_PROOF
 	sewrepair = FALSE
 	//for those curious, yes the artibackpack preserves organs and food. Check _organ.dm and snacks.dm
+
+/obj/item/storage/backpack/backpack/artibackpack/porter
+	name = "humdrum"
+	desc = "A absurdly oversized backpack with complex bronze pipework coursing through it. It hums and vibrates constantly."
+	sewrepair = TRUE //Kobold thing, trust.
+	component_type = /datum/component/storage/concrete/grid/porter
 
 /obj/item/storage/backpack/satchel/surgbag
 	name = "surgery bag"
@@ -470,6 +492,13 @@
 	. = ..()
 	for(var/i in 1 to max_storage)
 		var/obj/item/weapon/knife/throwingknife/psydon/A = new(loc)
+		if(!SEND_SIGNAL(src, COMSIG_TRY_STORAGE_INSERT, A, null, TRUE, TRUE))
+			qdel(A)
+
+/obj/item/storage/belt/leather/knifebelt/black/rous/Initialize()
+	. = ..()
+	for(var/i in 1 to max_storage)
+		var/obj/item/weapon/knife/throwingknife/rous/A = new(loc)
 		if(!SEND_SIGNAL(src, COMSIG_TRY_STORAGE_INSERT, A, null, TRUE, TRUE))
 			qdel(A)
 

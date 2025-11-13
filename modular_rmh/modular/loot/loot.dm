@@ -485,7 +485,7 @@
 	loot_table = list(
 		list(
 			/obj/item/clothing/neck/psycross = 1,
-			/obj/item/clothing/neck/psycross/noc = 6,
+			/obj/item/clothing/neck/psycross/silver/noc = 6,
 			/obj/item/clothing/neck/mercator = 1,
 			)
 		)

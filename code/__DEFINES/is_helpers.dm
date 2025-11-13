@@ -53,7 +53,7 @@ GLOBAL_LIST_INIT(turfs_without_ground, typecacheof(list(
 
 //Mobs
 #define isliving(A) (istype(A, /mob/living))
-
+#define issimple(A) (istype(A, /mob/living/simple_animal))
 #define isbrain(A) (istype(A, /mob/living/brain))
 
 //Carbon mobs
@@ -156,6 +156,10 @@ GLOBAL_LIST_INIT(pointed_types, typecacheof(list(
 
 #define is_reagent_container(O) (istype(O, /obj/item/reagent_containers))
 
+#define isfood(O) istype(O, /obj/item/reagent_containers/food)
+
+#define issnack(O) istype(O, /obj/item/reagent_containers/food/snacks)
+
 #define iseffect(O) (istype(O, /obj/effect))
 
 GLOBAL_LIST_INIT(RATS_DONT_EAT, typecacheof(list(
@@ -183,9 +187,9 @@ GLOBAL_LIST_INIT(RATS_DONT_EAT, typecacheof(list(
 	#define is_gaffer_job(job_type) (istype(job_type, /datum/job/gaffer))
 // Peasantry
 	#define is_jester_job(job_type) (istype(job_type, /datum/job/jester))
-	#define is_adventurer_job(job_type) (istype(job_type, /datum/job/adventurer))
-	#define is_mercenary_job(job_type) (istype(job_type, /datum/job/mercenary))
-	#define is_pilgrim_job(job_type) (istype(job_type, /datum/job/pilgrim))
+	#define is_adventurer_job(job_type) (istype(job_type, /datum/job/advclass/adventurer))
+	#define is_mercenary_job(job_type) (istype(job_type, /datum/job/advclass/mercenary))
+	#define is_pilgrim_job(job_type) (istype(job_type, /datum/job/advclass/pilgrim))
 	#define is_vagrant_job(job_type) (istype(job_type, /datum/job/vagrant))
 //  Apprentices
 	#define is_gaffer_assistant_job(job_type) (istype(job_type, /datum/job/gaffer_assistant))
@@ -195,6 +199,9 @@ GLOBAL_LIST_INIT(RATS_DONT_EAT, typecacheof(list(
 	#define is_rousman_job(job_type) (istype(job_type, /datum/job/rousman))
 	#define is_goblin_job(job_type) (istype(job_type, /datum/job/goblin))
 
+	#define is_zizolackey(mind) (mind.has_antag_datum(/datum/antagonist/zizocultist))
+	#define is_zizocultist(mind) (mind.has_antag_datum(/datum/antagonist/zizocultist/leader))
+
 // seemingly deprecated:
 //"Preacher" //as a job, there is an equivalent class
 
@@ -202,3 +209,5 @@ GLOBAL_VAR_INIT(magic_appearance_detecting_image, new /image) // appearances are
 #define isimage(thing) (istype(thing, /image))
 #define isappearance(thing) (!isimage(thing) && !ispath(thing) && istype(GLOB.magic_appearance_detecting_image, thing))
 #define isappearance_or_image(thing) (isimage(thing) || (!ispath(thing) && istype(GLOB.magic_appearance_detecting_image, thing)))
+
+#define isfish(A) (istype(A, /obj/item/reagent_containers/food/snacks/fish))

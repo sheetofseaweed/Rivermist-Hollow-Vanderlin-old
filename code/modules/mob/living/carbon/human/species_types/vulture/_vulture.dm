@@ -28,8 +28,10 @@
 	default_color = "3e3e3e"
 	use_skintones = TRUE
 
+	hygiene_mod = 1.25
+
 	species_traits = list(NO_UNDERWEAR, HAIR, OLDGREY)
-	inherent_traits = list(TRAIT_NOMOBSWAP, TRAIT_NOSTINK, TRAIT_NASTY_EATER)
+	inherent_traits = list(TRAIT_NOMOBSWAP, TRAIT_DEADNOSE, TRAIT_NASTY_EATER)
 	inherent_skills = list(
 		/datum/skill/misc/medicine = 1,
 	)
@@ -69,14 +71,14 @@
 
 	offset_genitals_m = list(
 		OFFSET_PENIS = list(0,0),\
-		OFFSET_BREASTS = list(0,-1),\
+		OFFSET_BREASTS = list(0,0),\
 		OFFSET_TESTICLES = list(0,0),\
 		OFFSET_VAGINA = list(0,0),\
 	)
 
 	offset_genitals_f = list(
 		OFFSET_PENIS = list(0,0),\
-		OFFSET_BREASTS = list(0,0),\
+		OFFSET_BREASTS = list(0,-1),\
 		OFFSET_TESTICLES = list(0,0),\
 		OFFSET_VAGINA = list(0,0),\
 	)
@@ -92,6 +94,7 @@
 		ORGAN_SLOT_STOMACH = /obj/item/organ/stomach,
 		ORGAN_SLOT_APPENDIX = /obj/item/organ/appendix,
 		ORGAN_SLOT_GUTS = /obj/item/organ/guts,
+		ORGAN_SLOT_ANUS = /obj/item/organ/genitals/filling_organ/anus,
 		ORGAN_SLOT_TAIL = /obj/item/organ/tail/medicator,
 		ORGAN_SLOT_SNOUT = /obj/item/organ/snout/beak,
 		ORGAN_SLOT_NECK_FEATURE = /obj/item/organ/neck_feature/medicator,
@@ -105,6 +108,9 @@
 		/datum/customizer/bodypart_feature/hair/head/humanoid/medicator,
 		/datum/customizer/bodypart_feature/accessory,
 		/datum/customizer/bodypart_feature/face_detail,
+		/datum/customizer/bodypart_feature/underwear,
+		/datum/customizer/bodypart_feature/legwear,
+		/datum/customizer/bodypart_feature/piercing,
 		/datum/customizer/organ/genitals/penis/human,
 		/datum/customizer/organ/genitals/vagina/human,
 		/datum/customizer/organ/genitals/breasts/human,
@@ -115,6 +121,35 @@
 
 	body_markings = list(
 		/datum/body_marking/tonage,
+		/datum/body_marking/womb_tattoo,
+		/datum/body_marking/butterfly,
+		/datum/body_marking/waist,
+		/datum/body_marking/diagonal_eyes,
+		/datum/body_marking/wide_eyes,
+		/datum/body_marking/stripes,
+		/datum/body_marking/plain,
+		/datum/body_marking/spotted,
+		/datum/body_marking/tiger,
+		/datum/body_marking/tiger/dark,
+		/datum/body_marking/sock,
+		/datum/body_marking/sock/tertiary,
+		/datum/body_marking/socklonger,
+		/datum/body_marking/tips,
+		/datum/body_marking/bellyscale,
+		/datum/body_marking/kobold_scale,
+		/datum/body_marking/bellyscaleslim,
+		/datum/body_marking/bellyscalesmooth,
+		/datum/body_marking/bellyscaleslimsmooth,
+		/datum/body_marking/buttscale,
+		/datum/body_marking/belly,
+		/datum/body_marking/bellyslim,
+		/datum/body_marking/tie,
+		/datum/body_marking/butt,
+		/datum/body_marking/tiesmall,
+		/datum/body_marking/backspots,
+		/datum/body_marking/front,
+		/datum/body_marking/flushed_cheeks,
+		/datum/body_marking/eyeliner,
 	)
 
 	COOLDOWN_DECLARE(medicator_cough_cooldown)

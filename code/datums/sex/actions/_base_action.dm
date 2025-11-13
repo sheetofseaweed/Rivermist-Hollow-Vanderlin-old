@@ -54,7 +54,7 @@
 	/// Whether to check if user is incapacitated
 	var/check_incapacitated = TRUE
 	/// Whether participants must be on same tile
-	var/check_same_tile = TRUE
+	var/check_same_tile = FALSE
 	/// Whether this requires a grab
 	var/require_grab = FALSE
 	/// Minimum grab state required
@@ -83,6 +83,12 @@
 	var/can_knot = FALSE
 	///basically for actions being done by the user where the target is the inserter set this to true
 	var/flipped = FALSE
+	/// Used for determining if the user should be gagged
+	var/gags_user = FALSE
+	/// Used for determining if the target should be gagged
+	var/gags_target = FALSE
+	/// Sound volume for actions
+	var/action_volume = 50
 
 /datum/sex_action/Destroy()
 	// Clean up any tracked storage entries
@@ -137,7 +143,7 @@
 		if((grabstate == null || grabstate < src.required_grab_state))
 			return FALSE
 
-	var/result = get_location_accessible(target, location = location, grabs = grabs, skipundies = skipundies)
+	var/result = get_location_accessible(target, location = location, grabs = grabs, skipundies = skipundies) || target.get_erp_pref(/datum/erp_preference/boolean/clothed_sex)
 	return result
 
 /datum/sex_action/proc/check_hole_storage_available(mob/living/carbon/human/target, mob/living/carbon/human/user)
@@ -163,7 +169,7 @@
 			item_to_test.name = stored_item_name
 
 	// Check if the specific hole can fit our item
-	var/can_fit = SEND_SIGNAL(target, COMSIG_HOLE_TRY_FIT, item_to_test, hole_id, user, TRUE) // Silent check
+	var/can_fit = SEND_SIGNAL(target, COMSIG_HOLE_TRY_FIT, item_to_test, hole_id, user, TRUE, TRUE) // Silent check
 
 	// Clean up test item
 	qdel(item_to_test)
@@ -197,7 +203,7 @@
 			item_to_store.name = stored_item_name
 
 	// Try to fit it in the hole
-	var/success = SEND_SIGNAL(target, COMSIG_HOLE_TRY_FIT, item_to_store, hole_id, user, FALSE)
+	var/success = SEND_SIGNAL(target, COMSIG_HOLE_TRY_FIT, item_to_store, hole_id, user, FALSE, TRUE)
 	if(!success)
 		qdel(item_to_store)
 		to_chat(user, span_warning("[target]'s [hole_id] can't accommodate [item_to_store.name]!"))
@@ -217,7 +223,7 @@
 		if(entry.hole_id == hole_id && entry.stored_item)
 			var/obj/item/stored_item = entry.stored_item
 
-			SEND_SIGNAL(target, COMSIG_HOLE_REMOVE_ITEM, stored_item, hole_id)
+			SEND_SIGNAL(target, COMSIG_HOLE_REMOVE_ITEM, stored_item, hole_id, silent, TRUE)
 
 			if(istype(stored_item, /obj/item/penis_fake))
 				var/obj/item/penis_fake/fake_penis = stored_item
@@ -253,6 +259,10 @@
 
 /datum/sex_action/proc/on_start(mob/living/carbon/human/user, mob/living/carbon/human/target)
 	SHOULD_CALL_PARENT(TRUE)
+	if(gags_user)
+		user.mouth_blocked = TRUE
+	if(gags_target)
+		target.mouth_blocked = TRUE
 	if(requires_hole_storage)
 		if(flipped)
 			if(!try_store_in_hole(target, user))
@@ -268,6 +278,10 @@
 
 /datum/sex_action/proc/on_finish(mob/living/carbon/human/user, mob/living/carbon/human/target)
 	SHOULD_CALL_PARENT(TRUE)
+	if(gags_user)
+		user.mouth_blocked = FALSE
+	if(gags_target)
+		target.mouth_blocked = FALSE
 	if(requires_hole_storage)
 		if(flipped)
 			remove_from_hole(target, user)
@@ -309,7 +323,7 @@
 
 
 /datum/sex_action/proc/do_onomatopoeia(mob/living/carbon/human/user)
-	user.balloon_alert_to_viewers("Plap!", alpha = rand(100, 200), x_offset = rand(-15, 15), y_offset = rand(0, 25), size = 0.8)
+	user.balloon_alert_to_viewers("Plap!")
 
 /datum/sex_action/proc/show_sex_effects(mob/living/carbon/human/user)
 	for(var/i in 1 to rand(1, 3))

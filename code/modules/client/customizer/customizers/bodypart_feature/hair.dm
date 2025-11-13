@@ -44,7 +44,11 @@
 	var/datum/customizer_entry/hair/hair_entry = entry
 	switch(href_list["customizer_task"])
 		if("hair_color")
-			var/list/hairs
+			var/new_color = color_pick_sanitized_lumi(user, "Choose your hair color:", "Character Preference", hair_entry.hair_color)
+			if(!new_color)
+				return
+			hair_entry.hair_color = sanitize_hexcolor(new_color, 6, TRUE)
+			/*var/list/hairs
 			var/new_color
 			if(prefs.age == AGE_OLD && (OLDGREY in prefs.pref_species.species_traits))
 				hairs = prefs.pref_species.get_oldhc_list()
@@ -55,7 +59,7 @@
 				new_color = hairs[new_hair]
 			if(!new_color)
 				return
-			hair_entry.hair_color = sanitize_hexcolor(new_color, 6, TRUE)
+			hair_entry.hair_color = sanitize_hexcolor(new_color, 6, TRUE)*/
 		if("natural_gradient")
 			if(!allows_natural_gradient)
 				return
@@ -143,6 +147,7 @@
 		/datum/sprite_accessory/hair/head/dave,
 		/datum/sprite_accessory/hair/head/dome,
 		/datum/sprite_accessory/hair/head/druid,
+		/datum/sprite_accessory/hair/head/dunes,
 		/datum/sprite_accessory/hair/head/fancy_elf,
 		/datum/sprite_accessory/hair/head/forester,
 		/datum/sprite_accessory/hair/head/foreigner_tief,
@@ -164,6 +169,7 @@
 		/datum/sprite_accessory/hair/head/princely,
 		/datum/sprite_accessory/hair/head/rogue,
 		/datum/sprite_accessory/hair/head/romantic,
+		/datum/sprite_accessory/hair/head/sandcrop,
 		/datum/sprite_accessory/hair/head/scribe,
 		/datum/sprite_accessory/hair/head/southern_human,
 		/datum/sprite_accessory/hair/head/son,
@@ -201,6 +207,8 @@
 		/datum/sprite_accessory/hair/head/homely,
 		/datum/sprite_accessory/hair/head/junia,
 		/datum/sprite_accessory/hair/head/lady,
+		/datum/sprite_accessory/hair/head/lakkaribun,
+		/datum/sprite_accessory/hair/head/lakkaricut,
 		/datum/sprite_accessory/hair/head/loosebraid,
 		/datum/sprite_accessory/hair/head/maiden,
 		/datum/sprite_accessory/hair/head/majestic_dwarf_F,

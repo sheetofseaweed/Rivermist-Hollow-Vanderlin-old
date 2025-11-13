@@ -66,6 +66,11 @@ body {
 }
 
 @font-face {
+  font-family: "Notredame";
+  src: url('otavan.ttf');
+}
+
+@font-face {
   font-family: "Underwater Love";
   src: url('deepspeak.ttf') format('truetype');
 }
@@ -754,6 +759,7 @@ h1.alert, h2.alert	{color: #c9c1ba;font-family: Mookmania, TrueType;}
 .hellspeak				{font-family: "Comforter Brush", "Mookmania"; font-size: 110%}
 .undead					{font-family: "FDMedian", "Mookmania";}
 .orc					{font-family: "VizaviTYGRA", Mookmania;}
+.otavan					{font-family: "Notredame", Mookmania; font-size: 200%;}
 .beast					{font-family: "VizaviTYGRA", Mookmania;}
 .reptile				{font-family: "ALOT Gutenberg B Normal", Mookmania; font-size: 120%;}
 .deepspeak				{font-family: "Underwater Love", Mookmania;}

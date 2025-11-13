@@ -11,12 +11,12 @@
 	resistance_flags = INDESTRUCTIBLE | LAVA_PROOF | FIRE_PROOF | UNACIDABLE | ACID_PROOF
 	var/in_use = FALSE
 	var/static/list/uncryoable = list(
-		/datum/job/lord,
-		/datum/job/hand,
-		/datum/job/prince,
-		/datum/job/consort,
-		/datum/job/priest,
-		/datum/job/captain,//Rest of these roles cannot cryo, as they must ahelp first before leaving the round.
+		///datum/job/lord,
+		///datum/job/hand,
+		///datum/job/prince,
+		///datum/job/consort,
+		///datum/job/priest,
+		///datum/job/captain,//Rest of these roles cannot cryo, as they must ahelp first before leaving the round.
 		/datum/job/gaffer //opening up the slot will break the gaffer ring code
 	)
 
@@ -28,7 +28,7 @@
 	if(in_use) // Someone's already going in.
 		return
 	var/mob/living/carbon/human/departing_mob = dropping
-	if(departing_mob != user && departing_mob.client)
+	if(departing_mob != user)// && departing_mob.client)
 		to_chat(user, span_warning("This one retains their free will. It's their choice if they want to leave for [SSmapping.config.immigrant_origin] or not."))
 		return //prevents people from forceghosting others
 	if(departing_mob.stat == DEAD)
@@ -101,5 +101,6 @@
 	icon_state = "carriage_normal"
 
 /obj/structure/train/far_travel
+	name = "far travel"
 	icon = 'modular_rmh/icons/turf/roguefloor.dmi'
 	icon_state = "fartravel"

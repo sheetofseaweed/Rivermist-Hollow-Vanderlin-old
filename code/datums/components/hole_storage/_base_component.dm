@@ -1,26 +1,31 @@
 /datum/component/storage/concrete/grid/hole
 	screen_max_rows = 4
 	screen_max_columns = 1
-	max_w_class = WEIGHT_CLASS_NORMAL
+	max_w_class = WEIGHT_CLASS_SMALL
 	not_while_equipped = FALSE
 
 	var/target_zone = BODY_ZONE_CHEST
 	var/facing_direction
 
+	no_spill = TRUE
+
 /datum/component/hole_storage
 	/// Array of holes going by ID = storage holder
 	var/list/hole_array = list()
+	var/mob/living/owner
 
 /datum/component/hole_storage/RegisterWithParent()
 	. = ..()
 	RegisterSignal(parent, COMSIG_HOLE_TRY_FIT, PROC_REF(try_fit_in_hole))
 	RegisterSignal(parent, COMSIG_HOLE_RETURN_INVENTORY, PROC_REF(return_inventory))
 	RegisterSignal(parent, COMSIG_HOLE_RETURN_ITEM_LIST, PROC_REF(return_list))
+	RegisterSignal(parent, COMSIG_HOLE_RETURN_ITEM_LIST_SINGLE, PROC_REF(return_list_single_hole))
 	RegisterSignal(parent, COMSIG_HOLE_ADD_HOLE, PROC_REF(add_hole))
 	RegisterSignal(parent, COMSIG_HOLE_REMOVE_HOLE, PROC_REF(remove_hole))
 	RegisterSignal(parent, COMSIG_HOLE_MODIFY_HOLE, PROC_REF(modify_hole))
 	RegisterSignal(parent, COMSIG_HOLE_GET_FULLNESS, PROC_REF(get_hole_fullness))
 	RegisterSignal(parent, COMSIG_HOLE_REMOVE_ITEM, PROC_REF(remove_item_from_hole))
+	RegisterSignal(parent, COMSIG_HOLE_REMOVE_RANDOM_ITEM, PROC_REF(remove_random_item))
 
 /**
  * Add a new hole with storage capability
@@ -30,7 +35,7 @@
  * @param hole_name - Display name for the hole (optional)
  * @param storage_size - Custom storage size (optional)
  */
-/datum/component/hole_storage/proc/add_hole(datum/source, hole_id, hole_name = null, datum/component/storage/concrete/grid/hole/storage_type = /datum/component/storage/concrete/grid/hole)
+/datum/component/hole_storage/proc/add_hole(datum/source, hole_id, hole_name = null, datum/component/storage/concrete/grid/hole/storage_type = /datum/component/storage/concrete/grid/hole, mob/living/mob_user)
 	if(!hole_id)
 		return FALSE
 
@@ -51,6 +56,10 @@
 		// a very crude patchwork fix, for some reason the component is not being added correctly
 		storage_comp.RemoveComponent()
 		storage_comp = new_storage.AddComponent(storage_type)
+
+	owner = mob_user
+
+	new_storage.forceMove(owner)
 
 	hole_array[hole_id] = storage_comp
 	return storage_comp
@@ -178,7 +187,7 @@
  * @param mob/user - User performing the removal (optional)
  * @return TRUE if successfully removed, FALSE otherwise
  */
-/datum/component/hole_storage/proc/remove_item_from_hole(datum/source, obj/item/item, hole_id, mob/user)
+/datum/component/hole_storage/proc/remove_item_from_hole(datum/source, obj/item/item, hole_id, mob/user, silent, regular_sex = TRUE)
 	if(!hole_id || !hole_array[hole_id] || !item)
 		return FALSE
 
@@ -191,8 +200,15 @@
 	if(!storage_parent || !(item in storage_parent.contents))
 		return FALSE
 
+	if(!regular_sex && user)
+		SEND_SIGNAL(parent, COMSIG_SEX_HOLE_BEFORE_REMOVE, item, hole_id, user)
+		if(!silent)
+			to_chat(user, span_notice("You push [item] inside [owner]'s [hole_id]."))
+
 	// Remove the item from storage
 	storage_comp.remove_from_storage(item, user)
+	if(!regular_sex && user)
+		SEND_SIGNAL(parent, COMSIG_SEX_HOLE_AFTER_REMOVE, item, hole_id, user)
 
 	if(user)
 		to_chat(user, span_notice("You remove [item] from [hole_id]."))
@@ -284,9 +300,54 @@
 	return removed_count
 
 /**
+ * Remove random item from a specific hole
+ *
+ * @param source - The source object calling this
+ * @param item_name - The name of items to remove
+ * @param hole_id - Unique identifier for the hole
+ * @param mob/user - User performing the removal (optional)
+ * @return The Item
+ */
+/datum/component/hole_storage/proc/remove_random_item(datum/source, hole_id, mob/user,  silent = TRUE, regular_sex = FALSE)
+	if(!hole_id || !hole_array[hole_id])
+		return
+
+	var/datum/component/storage/storage_comp = hole_array[hole_id]
+	if(!storage_comp || QDELETED(storage_comp.parent))
+		return
+
+	var/obj/storage_parent = storage_comp.parent
+	if(!storage_parent)
+		return
+
+	var/obj/item_to_remove
+
+	// Pick the item
+	item_to_remove = pick(storage_parent.contents)
+	if(!item_to_remove)
+		return
+
+	if(!regular_sex && user)
+		SEND_SIGNAL(parent, COMSIG_SEX_HOLE_BEFORE_REMOVE, item_to_remove, hole_id, user)
+		if(!silent)
+			to_chat(user, span_notice("You push [item_to_remove] inside [owner]'s [hole_id]."))
+
+	// Remove the items
+	storage_comp.remove_from_storage(item_to_remove, user)
+
+	if(!regular_sex && user)
+		SEND_SIGNAL(parent, COMSIG_SEX_HOLE_AFTER_REMOVE, item_to_remove, hole_id, user)
+
+	if(user && !silent)
+		to_chat(user, span_notice("You remove [item_to_remove.name] from [hole_id]."))
+
+	return item_to_remove
+
+
+/**
  * Try to fit an item into a specific hole
  */
-/datum/component/hole_storage/proc/try_fit_in_hole(datum/source, obj/item/item, hole_id, mob/user, silent = TRUE)
+/datum/component/hole_storage/proc/try_fit_in_hole(datum/source, obj/item/item, hole_id, mob/user, silent = TRUE, regular_sex = FALSE)
 	if(!hole_id || !hole_array[hole_id] || !item)
 		return FALSE
 
@@ -297,13 +358,23 @@
 	// Check if item can fit
 	if(!storage_comp.can_be_inserted(item, user))
 		if(user && !silent)
-			to_chat(user, span_warning("[item] won't fit in [hole_id]."))
+			to_chat(user, span_warning("[item] won't fit inside [owner]'s [hole_id]."))
 		return FALSE
+
+	if(!regular_sex)
+		if(user && !silent)
+			SEND_SIGNAL(parent, COMSIG_SEX_HOLE_BEFORE_INSERT, item, hole_id, user)
+			if(!silent)
+				to_chat(user, span_notice("You push [item] inside [owner]'s [hole_id]."))
+
 
 	// Insert the item
 	storage_comp.handle_item_insertion(item, user)
-	if(user && !silent)
-		to_chat(user, span_notice("You place [item] into [hole_id]."))
+	if(!regular_sex)
+		SEND_SIGNAL(parent, COMSIG_SEX_HOLE_AFTER_INSERT, item, hole_id, user)
+	if(!silent)
+		if(user)
+			to_chat(user, span_notice("You've pushed [item] inside [owner]'s [hole_id]."))
 	return TRUE
 
 /**
@@ -341,11 +412,25 @@
 
 	return all_items
 
+/**
+ * Return a simple list of all items in ONE hole
+ */
+/datum/component/hole_storage/proc/return_list_single_hole(datum/source, hole_id)
+	var/list/all_items = list()
+
+	var/datum/component/storage/storage_comp = hole_array[hole_id]
+	if(!storage_comp || QDELETED(storage_comp.parent))
+		return
+
+	all_items += storage_comp.contents()
+
+	return all_items
+
 // Storage container object for holes
 /obj/item/storage/backpack/hole_storage
 	name = "hole storage"
 	desc = "God I feel dirty."
-	icon_state = "backpack"
+	icon_state = ""
 
 /mob/living/proc/add_hole(hole_id, datum/component/storage/concrete/grid/hole/hole_type)
 	var/datum/component/hole_storage/hole = GetComponent(/datum/component/hole_storage)
@@ -353,4 +438,4 @@
 		AddComponent(/datum/component/hole_storage)
 	if(!hole_id)
 		return
-	SEND_SIGNAL(src, COMSIG_HOLE_ADD_HOLE, hole_id, hole_id, hole_type)
+	SEND_SIGNAL(src, COMSIG_HOLE_ADD_HOLE, hole_id, hole_id, hole_type, src)

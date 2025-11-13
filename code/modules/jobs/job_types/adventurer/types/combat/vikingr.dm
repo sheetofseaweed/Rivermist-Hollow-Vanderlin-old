@@ -1,14 +1,14 @@
-/datum/advclass/combat/vikingr
-	name = "Elven Vikingr"
+/datum/job/advclass/combat/vikingr
+	title = "Elven Vikingr"
 	tutorial = "A wandering searaider, a Vikingr from the Elven Clans of Kaledon. You are locked in a fierce rivalry with your other kin, those sea elves, those coastal elves, you hate whichever one is not you. You will see them die. Abyysor's bounty is what you seek, and you shall have it."
 	allowed_races = RACES_PLAYER_ELF
-	outfit = /datum/outfit/job/adventurer/vikingr
+	outfit = /datum/outfit/adventurer/vikingr
 	category_tags = list(CTAG_ADVENTURER)
 	min_pq = 0
 	cmode_music = 'sound/music/cmode/adventurer/CombatWarrior.ogg'
 
 
-/datum/outfit/job/adventurer/vikingr/pre_equip(mob/living/carbon/human/H)
+/datum/outfit/adventurer/vikingr/pre_equip(mob/living/carbon/human/H)
 	..()
 	H.adjust_skillrank(/datum/skill/combat/knives, pick(1,1,2), TRUE)
 	H.adjust_skillrank(/datum/skill/combat/shields, 3, TRUE)
@@ -21,10 +21,10 @@
 	H.adjust_skillrank(/datum/skill/misc/reading, pick(0,1,1), TRUE)
 	H.adjust_skillrank(/datum/skill/combat/axesmaces, 2, TRUE)
 
-	if(H.gender == FEMALE)
+	/*if(H.gender == FEMALE)
 		H.underwear = "Femleotard"
 		H.underwear_color = CLOTHING_SOOT_BLACK
-		H.update_body()
+		H.update_body()*/
 	shoes = /obj/item/clothing/shoes/boots
 	gloves = /obj/item/clothing/gloves/leather
 	wrists = /obj/item/clothing/wrists/bracers/leather

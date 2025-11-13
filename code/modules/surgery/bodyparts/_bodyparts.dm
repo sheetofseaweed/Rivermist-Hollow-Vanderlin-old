@@ -163,7 +163,7 @@
 
 /obj/item/bodypart/MiddleClick(mob/living/user, params)
 	var/obj/item/held_item = user.get_active_held_item()
-	var/datum/species/S = original_owner.dna.species
+	var/datum/species/S = original_owner?.dna?.species
 	if(held_item)
 		if(held_item.get_sharpness() && held_item.wlength == WLENGTH_SHORT)
 			if(!skeletonized)
@@ -183,8 +183,9 @@
 				var/amt2raise = user.STAINT/3
 				if(do_after(user, used_time, src))
 					var/obj/item/reagent_containers/food/snacks/meat/steak/steak
+					var/steak_type = S?.meat || /obj/item/reagent_containers/food/snacks/meat/steak
 					for(steaks, steaks>0, steaks--)
-						steak = new S.meat(get_turf(src))	//Meat depends on species.
+						steak = new steak_type(get_turf(src))	//Meat depends on species.
 						if(rotted)
 							steak.become_rotten()
 					new /obj/effect/decal/cleanable/blood/splatter(get_turf(src))
@@ -192,6 +193,20 @@
 					qdel(src)
 			else
 				to_chat(user, span_warning("[src] has no meat to butcher."))
+	else if(isanimal(user))
+		if(!skeletonized)
+			visible_message("[user] begins to eat \the [src].")
+			playsound(src, 'sound/foley/gross.ogg', 100, FALSE)
+			if(do_after(user, 3 SECONDS, src))
+				var/obj/item/reagent_containers/food/snacks/meat/steak/steak
+				var/steak_type = S?.meat || /obj/item/reagent_containers/food/snacks/meat/steak
+				steak = new steak_type(get_turf(src))	//Meat depends on species.
+				if(rotted)
+					steak.become_rotten()
+				new /obj/effect/decal/cleanable/blood/splatter(get_turf(src))
+				qdel(src)
+		else
+			to_chat(user, span_warning("[src] has no meat to eat."))
 	..()
 
 /obj/item/bodypart/attack(mob/living/carbon/C, mob/user)
@@ -714,6 +729,15 @@
 		if(NO_BODYPART_FEATURES in owner_species.species_traits)
 			draw_bodypart_features = FALSE
 
+	// Markings overlays
+	var/override_color = null
+	if(rotted)
+		override_color = SKIN_COLOR_ROT
+	if(!skeletonized)
+		var/list/marking_overlays = get_markings_overlays(override_color)
+		if(marking_overlays)
+			. += marking_overlays
+
 	if(!skeletonized && draw_organ_features)
 		for(var/obj/item/organ/organ as anything in get_organs())
 			if(!organ.is_visible())
@@ -768,8 +792,8 @@
 	px_x = 0
 	px_y = 0
 	var/obj/item/cavity_item
-	aux_zone = "boob"
-	aux_layer = BODYPARTS_LAYER
+	//aux_zone = "boob"
+	//aux_layer = BODYPARTS_LAYER
 	subtargets = list(BODY_ZONE_CHEST, BODY_ZONE_PRECISE_STOMACH, BODY_ZONE_PRECISE_GROIN)
 	grabtargets = list(BODY_ZONE_CHEST, BODY_ZONE_PRECISE_STOMACH, BODY_ZONE_PRECISE_GROIN)
 	offset = OFFSET_ARMOR
@@ -1154,3 +1178,39 @@
 	dismemberable = 0
 	max_damage = 5000
 	animal_origin = DEVIL_BODYPART
+
+/obj/item/bodypart/proc/adjust_marking_overlays(list/appearance_list)
+	return
+
+/obj/item/bodypart/proc/get_specific_markings_overlays(list/specific_markings, aux = FALSE, mob/living/carbon/human/human_owner, override_color)
+	var/list/appearance_list = list()
+	var/specific_layer = aux ? aux_layer : BODYPARTS_LAYER
+	var/specific_render_zone = aux ? aux_zone : body_zone
+	for(var/key in specific_markings)
+		var/color = specific_markings[key]
+		var/datum/body_marking/BM = GLOB.body_markings[key]
+
+		var/render_limb_string = specific_render_zone
+		if(BM.gendered && (!BM.gender_only_chest || specific_render_zone == BODY_ZONE_CHEST))
+			var/gendaar = (human_owner.gender == FEMALE) ? "f" : "m"
+			render_limb_string = "[render_limb_string]_[gendaar]"
+
+		var/mutable_appearance/accessory_overlay = mutable_appearance(BM.icon, "[BM.icon_state]_[render_limb_string]", -specific_layer)
+		if(override_color)
+			accessory_overlay.color = "#[override_color]"
+		else
+			accessory_overlay.color = "#[color]"
+		appearance_list += accessory_overlay
+	return appearance_list
+
+/obj/item/bodypart/proc/get_markings_overlays(override_color)
+	if((!markings && !aux_markings) || !owner || !ishuman(owner))
+		return
+	var/mob/living/carbon/human/human_owner = owner
+	var/list/appearance_list = list()
+	if(markings)
+		appearance_list += get_specific_markings_overlays(markings, FALSE, human_owner, override_color)
+	if(aux_markings)
+		appearance_list += get_specific_markings_overlays(aux_markings, TRUE, human_owner, override_color)
+	adjust_marking_overlays(appearance_list)
+	return appearance_list

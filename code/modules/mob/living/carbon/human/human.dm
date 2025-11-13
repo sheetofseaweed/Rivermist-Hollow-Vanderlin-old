@@ -33,6 +33,48 @@
 							V.add_stress(/datum/stress_event/dwarfshaved)
 				else
 					held_item.melee_attack_chain(user, src, params)
+	if(user == src)
+		if(get_num_arms(FALSE) < 1)
+			return
+		if(user.zone_selected == BODY_ZONE_PRECISE_GROIN)
+			if(!underwear)
+				return
+			var/under_clothes = get_location_accessible(src, BODY_ZONE_PRECISE_GROIN, skipundies = TRUE)
+			src.visible_message(span_notice("[src] begins to take off [underwear][under_clothes ? " from under their clothes" : ""]..."))
+			var/delay = under_clothes ? 20 : 40
+			if(do_after(user, delay, target = src))
+				var/obj/item/bodypart/chest = get_bodypart(BODY_ZONE_CHEST)
+				chest.remove_bodypart_feature(underwear.undies_feature)
+				underwear.forceMove(get_turf(src))
+				src.put_in_hands(underwear)
+				underwear = null
+				regenerate_icons()
+		if((user.zone_selected == BODY_ZONE_L_LEG) || (user.zone_selected == BODY_ZONE_R_LEG))
+			if(!legwear_socks)
+				return
+			var/under_clothes = get_location_accessible(src, BODY_ZONE_PRECISE_R_FOOT, skipundies = TRUE) || get_location_accessible(src, BODY_ZONE_PRECISE_L_FOOT, skipundies = TRUE)
+			src.visible_message(span_notice("[src] begins to take off [legwear_socks][under_clothes ? " from under their clothes" : ""]..."))
+			var/delay = under_clothes ? 25 : 50
+			if(do_after(user, delay, target = src))
+				var/obj/item/bodypart/chest = get_bodypart(BODY_ZONE_CHEST)
+				chest.remove_bodypart_feature(legwear_socks.legwears_feature)
+				legwear_socks.forceMove(get_turf(src))
+				src.put_in_hands(legwear_socks)
+				legwear_socks = null
+				regenerate_icons()
+		if(user.zone_selected == BODY_ZONE_CHEST)
+			if(!piercings_item)
+				return
+			var/under_clothes = get_location_accessible(src, BODY_ZONE_CHEST, skipundies = TRUE)
+			src.visible_message(span_notice("[src] begins to take off [piercings_item][under_clothes ? " from under their clothes" : ""]..."))
+			var/delay = under_clothes ? 25 : 40
+			if(do_after(user, delay, target = src))
+				var/obj/item/bodypart/chest = get_bodypart(BODY_ZONE_CHEST)
+				chest.remove_bodypart_feature(piercings_item.piercings_feature)
+				piercings_item.forceMove(get_turf(src))
+				src.put_in_hands(piercings_item)
+				piercings_item = null
+				regenerate_icons()
 
 /mob/living/carbon/human/Initialize()
 	// verbs += /mob/living/proc/mob_sleep
@@ -474,6 +516,7 @@
 	spill_embedded_objects()
 	set_heartattack(FALSE)
 	drunkenness = 0
+	set_hygiene(HYGIENE_LEVEL_NORMAL)
 	..()
 
 /mob/living/carbon/human/check_weakness(obj/item/weapon, mob/living/attacker)
@@ -505,8 +548,12 @@
 /mob/living/carbon/human/vv_get_dropdown()
 	. = ..()
 	VV_DROPDOWN_OPTION("", "---------")
+	VV_DROPDOWN_OPTION(VV_HK_REAPPLY_PREFS, "Reapply Preferences")
+	VV_DROPDOWN_OPTION(VV_HK_MOD_QUIRKS, "Edit Quirks")
 	VV_DROPDOWN_OPTION(VV_HK_COPY_OUTFIT, "Copy Outfit")
 	VV_DROPDOWN_OPTION(VV_HK_SET_SPECIES, "Set Species")
+	VV_DROPDOWN_OPTION(VV_HK_CORONATE, "Coronate")
+	VV_DROPDOWN_OPTION(VV_HK_CHANGE_TITLE, "Change Title")
 
 /mob/living/carbon/human/vv_do_topic(list/href_list)
 	. = ..()
@@ -514,6 +561,33 @@
 		if(!check_rights(R_SPAWN))
 			return
 		copy_outfit()
+	if(href_list[VV_HK_REAPPLY_PREFS])
+		if(!check_rights(R_SPAWN))
+			return
+		if(!client || !client.prefs)
+			return
+		client.prefs.apply_prefs_to(src, TRUE)
+	if(href_list[VV_HK_MOD_QUIRKS])
+		if(!check_rights(R_SPAWN))
+			return
+
+		var/list/options = list("Clear"="Clear")
+		for(var/x in subtypesof(/datum/quirk))
+			var/datum/quirk/T = x
+			var/qname = initial(T.name)
+			options[has_quirk(T) ? "[qname] (Remove)" : "[qname] (Add)"] = T
+
+		var/result = input(usr, "Choose quirk to add/remove","Quirk Mod") as null|anything in sortList(options)
+		if(result)
+			if(result == "Clear")
+				for(var/datum/quirk/q in roundstart_quirks)
+					remove_quirk(q.type)
+			else
+				var/T = options[result]
+				if(has_quirk(T))
+					remove_quirk(T)
+				else
+					add_quirk(T,TRUE)
 	if(href_list[VV_HK_SET_SPECIES])
 		if(!check_rights(R_SPAWN))
 			return
@@ -522,6 +596,54 @@
 			var/newtype = GLOB.species_list[result]
 			admin_ticket_log("[key_name_admin(usr)] has modified the bodyparts of [src] to [result]")
 			set_species(newtype)
+	if(href_list[VV_HK_CORONATE])
+		if(!src.mind)
+			return
+		if(is_lord_job(mind.assigned_role))
+			return
+
+		var/appointment_type = browser_alert(usr, "Are you sure you want to coronate [src.real_name] as the new Monarch?", "Confirmation", DEFAULT_INPUT_CHOICES)
+		if(appointment_type == CHOICE_NO)
+			return
+
+		var/mob/living/carbon/coronated
+		coronated = src
+
+		var/datum/job/lord_job = SSjob.GetJobType(/datum/job/lord)
+		var/datum/job/consort_job = SSjob.GetJobType(/datum/job/consort)
+		for(var/mob/living/carbon/human/HL in GLOB.human_list)
+			//this sucks ass. refactor to locate the current ruler/consort
+			if(HL.mind)
+				if(is_lord_job(HL.mind.assigned_role) || is_consort_job(HL.mind.assigned_role))
+					HL.mind.set_assigned_role(SSjob.GetJobType(/datum/job/villager))
+			//would be better to change their title directly, but that's not possible since the title comes from the job datum
+			if(HL.job == "Monarch")
+				HL.job = "Ex-Monarch"
+				lord_job?.remove_spells(HL)
+			if(HL.job == "Consort")
+				HL.job = "Ex-Consort"
+				consort_job?.remove_spells(HL)
+
+		var/new_title = (coronated.gender == MALE) ? SSmapping.config.monarch_title : SSmapping.config.monarch_title_f
+		coronated.mind.set_assigned_role(/datum/job/lord)
+		lord_job?.get_informed_title(coronated, TRUE, new_title)
+		coronated.job = "Monarch" //Monarch is used when checking if the ruler is alive, not "King" or "Queen". Can also pass it on and have the title change properly later.
+		lord_job?.add_spells(coronated)
+		SSticker.rulermob = coronated
+		GLOB.badomens -= OMEN_NOLORD
+		priority_announce("The Ten have named [coronated.real_name] the inheritor of [SSmapping.config.map_name]!", \
+		title = "Long Live [lord_job.get_informed_title(coronated)] [coronated.real_name]!", sound = 'sound/misc/bell.ogg')
+	if(href_list[VV_HK_CHANGE_TITLE])
+		if(!mind?.assigned_role)
+			return
+		var/datum/job/human_job = mind.assigned_role
+		var/new_title = browser_input_text(usr, "What new title would you like to assign?", "Title Change")
+		if(!new_title)
+			return
+		admin_title = new_title
+		if(is_lord_job(human_job))
+			var/datum/job/lord_job = SSjob.GetJobType(/datum/job/lord)
+			lord_job?.get_informed_title(src, TRUE, new_title)
 
 /mob/living/carbon/human/MouseDrop_T(mob/living/target, mob/living/user)
 	if(pulling == target && stat == CONSCIOUS)
@@ -658,7 +780,7 @@
 /mob/living/carbon/human/proc/skele_look()
 	dna.species.go_bald()
 	update_body_parts(redraw = TRUE)
-	underwear = "Nude"
+	//underwear = "Nude"
 
 /mob/living/carbon/human/adjust_nutrition(change) //Honestly FUCK the oldcoders for putting nutrition on /mob someone else can move it up because holy hell I'd have to fix SO many typechecks
 	if(HAS_TRAIT(src, TRAIT_NOHUNGER))
@@ -694,7 +816,6 @@
 	updateappearance(mutcolor_update = TRUE)
 
 	job = target.job // NOT assigned_role
-	migrant_type = target.migrant_type
 	faction = target.faction
 	deathsound = target.deathsound
 	gender = target.gender
@@ -706,18 +827,17 @@
 	lip_style = target.lip_style
 	lip_color = target.lip_color
 	age = target.age
-	underwear = target.underwear
-	underwear_color = target.underwear_color
-	undershirt = target.undershirt
+	//underwear = target.underwear
+	//underwear_color = target.underwear_color
+	//undershirt = target.undershirt
 	shavelevel = target.shavelevel
-	socks = target.socks
-	advjob = target.advjob
+	//socks = target.socks
 	spouse_mob = target.spouse_mob
 	spouse_indicator = target.spouse_indicator
 	has_stubble = target.has_stubble
 	headshot_link = target.headshot_link
 	flavortext = target.flavortext
-	bloodpool = target.bloodpool
+	set_bloodpool(target.bloodpool)
 
 	var/obj/item/bodypart/head/target_head = target.get_bodypart(BODY_ZONE_HEAD)
 	if(!isnull(target_head))
@@ -805,7 +925,10 @@
 				GLOB.weatherproof_z_levels |= "[turf.z]"
 		if("[turf.z]" in GLOB.weatherproof_z_levels)
 			faction |= FACTION_MATTHIOS
-			SSmobs.matthios_mobs |= src
+			SSmatthios_mobs.register_mob(src)
+		if(SSterrain_generation.get_island_at_location(turf))
+			faction |= "islander"
+			SSisland_mobs.register_mob(src, SSterrain_generation.get_island_at_location(turf))
 
 /**
  * Called when this human should be washed

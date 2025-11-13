@@ -182,6 +182,8 @@ F
 #define BB_SHROOM_COOLDOWN "shroom_cd"
 #define BB_DRUG_COOLDOWN "drug_cd"
 
+#define BB_AGRIOPYLON_BLESS_COOLDOWN "agriopylon_bless_cooldown"
+
 #define BB_QUAKE_COOLDOWN "quake_cooldown"
 #define BB_EARTHQUAKE_COOLDOWN "earthquake_cooldown"
 
@@ -217,6 +219,7 @@ F
 #define BB_CAT_HOME "cat_home"
 /// key that holds the human we will beg
 #define BB_HUMAN_BEG_TARGET "human_beg_target"
+#define BB_BEGGING_FOOD_ITEM "item_beg_target"
 
 #define BB_CAT_KITTEN_TARGET "BB_cat_kitten_target"
 #define BB_CAT_HOLDING_FOOD "BB_cat_holding_food"
@@ -287,6 +290,8 @@ F
 // Used to hold state without making bigass lists
 /// For /datum/ai_behavior/find_potential_targets, what if any field are we using currently
 #define BB_FIND_TARGETS_FIELD(type) "bb_find_targets_field_[type]"
+/// For /datum/ai_behavior/find_potential_horny_targets, what if any field are we using currently
+#define BB_FIND_HORNY_TARGETS_FIELD(type) "bb_find_horny_targets_field_[type]"
 
 #define ACTION_STATE_CONTINUE 1
 #define ACTION_STATE_COMPLETE 2

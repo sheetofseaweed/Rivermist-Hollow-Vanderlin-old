@@ -2,8 +2,8 @@
 	abstract_type = /datum/sprite_accessory/piercing
 	icon = 'modular_rmh/icons/mob/sprite_accessory/piercings/rings.dmi'
 	color_key_name = "Piercings"
-	layer = BODY_FRONT_FRONT_FRONT_LAYER
-	color_disabled = TRUE
+	layer = BODY_FRONT_LAYER
+	//color_disabled = TRUE
 	var/piercing_type
 
 /datum/sprite_accessory/piercing/get_icon_state(obj/item/organ/organ, obj/item/bodypart/bodypart, mob/living/carbon/owner)

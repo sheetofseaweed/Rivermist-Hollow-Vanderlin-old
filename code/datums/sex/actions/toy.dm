@@ -6,6 +6,9 @@
 	stored_item_type = /obj/item/toy
 	continous = FALSE
 
+/datum/sex_action/insert_toy/shows_on_menu(mob/living/carbon/human/user, mob/living/carbon/human/target)
+	return FALSE
+
 /datum/sex_action/insert_toy/can_perform(mob/living/carbon/human/user, mob/living/carbon/human/target)
 	. = ..()
 	if(!.)
@@ -26,7 +29,7 @@
 		return FALSE
 
 	// Try to fit it in the hole
-	var/success = SEND_SIGNAL(target, COMSIG_HOLE_TRY_FIT, held_toy, hole_id, user, FALSE)
+	var/success = SEND_SIGNAL(target, COMSIG_HOLE_TRY_FIT, held_toy, hole_id, user, FALSE, FALSE)
 	if(!success)
 		to_chat(user, span_warning("[target]'s [hole_id] can't accommodate [held_toy.name]!"))
 		return FALSE

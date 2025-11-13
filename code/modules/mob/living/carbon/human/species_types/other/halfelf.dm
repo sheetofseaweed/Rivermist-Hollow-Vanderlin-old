@@ -98,6 +98,7 @@
 		ORGAN_SLOT_STOMACH = /obj/item/organ/stomach,
 		ORGAN_SLOT_APPENDIX = /obj/item/organ/appendix,
 		ORGAN_SLOT_GUTS = /obj/item/organ/guts,
+		ORGAN_SLOT_ANUS = /obj/item/organ/genitals/filling_organ/anus,
 	)
 
 	customizers = list(
@@ -107,6 +108,9 @@
 		/datum/customizer/bodypart_feature/hair/facial/humanoid,
 		/datum/customizer/bodypart_feature/accessory,
 		/datum/customizer/bodypart_feature/face_detail,
+		/datum/customizer/bodypart_feature/underwear,
+		/datum/customizer/bodypart_feature/legwear,
+		/datum/customizer/bodypart_feature/piercing,
 		/datum/customizer/organ/genitals/penis/human,
 		/datum/customizer/organ/genitals/vagina/human,
 		/datum/customizer/organ/genitals/breasts/human,
@@ -122,6 +126,35 @@
 
 	body_markings = list(
 		/datum/body_marking/tonage,
+		/datum/body_marking/womb_tattoo,
+		/datum/body_marking/butterfly,
+		/datum/body_marking/waist,
+		/datum/body_marking/diagonal_eyes,
+		/datum/body_marking/wide_eyes,
+		/datum/body_marking/stripes,
+		/datum/body_marking/plain,
+		/datum/body_marking/spotted,
+		/datum/body_marking/tiger,
+		/datum/body_marking/tiger/dark,
+		/datum/body_marking/sock,
+		/datum/body_marking/sock/tertiary,
+		/datum/body_marking/socklonger,
+		/datum/body_marking/tips,
+		/datum/body_marking/bellyscale,
+		/datum/body_marking/kobold_scale,
+		/datum/body_marking/bellyscaleslim,
+		/datum/body_marking/bellyscalesmooth,
+		/datum/body_marking/bellyscaleslimsmooth,
+		/datum/body_marking/buttscale,
+		/datum/body_marking/belly,
+		/datum/body_marking/bellyslim,
+		/datum/body_marking/tie,
+		/datum/body_marking/butt,
+		/datum/body_marking/tiesmall,
+		/datum/body_marking/backspots,
+		/datum/body_marking/front,
+		/datum/body_marking/flushed_cheeks,
+		/datum/body_marking/eyeliner,
 	)
 
 /datum/species/human/halfelf/check_roundstart_eligible()
@@ -133,12 +166,17 @@
 		"Solar-Hue" = SKIN_COLOR_SOLAR_HUE, // - (White 2)
 		"Walnut-Stine" = SKIN_COLOR_WALNUT_STINE, // - (White 3)
 		"Amber-Stained" = SKIN_COLOR_AMBER_STAINED, // - (White 4)
-		"Joshua-Aligned" = SKIN_COLOR_JOSHUA_ALIGNED, // - (Middle-Eastern)
+		"Joshua-Aligned" = SKIN_COLOR_JOSHUA_ALIGNED, // - (Middle-Eastern 1)
+		"Acacia-Crossed" = SKIN_COLOR_ACACIA_CROSSED, // - (Middle Eastern 2)
 		"Arid-Birthed" = SKIN_COLOR_ARID_BIRTHED, // - (Black)
 		"Redwood-Rooted" = SKIN_COLOR_REDWOOD_ROOTED, // - (Mediterranean 1)
 		"Drifted-Wood" = SKIN_COLOR_DRIFTED_WOOD, // - (Mediterranean 2)
 		"Vine-Wrapped" = SKIN_COLOR_VINE_WRAPPED, // - (Latin 2)
 		"Sage-Bloomed" = SKIN_COLOR_SAGE_BLOOMED, // - (Black 2)
+		"Mangrove-Cradled" = SKIN_COLOR_MANGROVE_CRADLED, // - (Native American 1)
+		"Tundra-Kissed" = SKIN_COLOR_TUNDRA_KISSED, // - (Native American 2)
+		"Ocean-Born" = SKIN_COLOR_OCEAN_BORN, // - (Polynesian)
+		"Basalt-Birthed" = SKIN_COLOR_BASALT_BIRTHED, // - (Melanesian)
 	))
 
 /datum/species/human/halfelf/get_hairc_list()

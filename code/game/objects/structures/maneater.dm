@@ -1,5 +1,5 @@
 
-/obj/structure/flora/grass/maneater
+/*/obj/structure/flora/grass/maneater
 	icon = 'icons/roguetown/mob/monster/maneater.dmi'
 	icon_state = "maneater-hidden"
 	num_random_icons = 0
@@ -60,7 +60,7 @@
 				continue
 			last_eat = world.time
 			L.flash_fullscreen("redflash3")
-			playsound(src.loc, list('sound/vo/mobs/plant/attack (1).ogg','sound/vo/mobs/plant/attack (2).ogg','sound/vo/mobs/plant/attack (3).ogg','sound/vo/mobs/plant/attack (4).ogg'), 100, FALSE, -1)
+			playsound(src.loc, pick('sound/vo/mobs/plant/attack (1).ogg','sound/vo/mobs/plant/attack (2).ogg','sound/vo/mobs/plant/attack (3).ogg','sound/vo/mobs/plant/attack (4).ogg'), 100, FALSE, -1)
 			if(iscarbon(L))
 				var/mob/living/carbon/C = L
 				src.visible_message("<span class='danger'>[src] starts to rip apart [C]!</span>")
@@ -154,7 +154,7 @@
 			if(!HAS_TRAIT(L, TRAIT_NOPAIN))
 				L.emote("painscream", forced = TRUE)
 			src.visible_message("<span class='danger'>[src] snatches [L]!</span>")
-			playsound(src.loc, list('sound/vo/mobs/plant/attack (1).ogg','sound/vo/mobs/plant/attack (2).ogg','sound/vo/mobs/plant/attack (3).ogg','sound/vo/mobs/plant/attack (4).ogg'), 100, FALSE, -1)
+			playsound(src.loc, pick('sound/vo/mobs/plant/attack (1).ogg','sound/vo/mobs/plant/attack (2).ogg','sound/vo/mobs/plant/attack (3).ogg','sound/vo/mobs/plant/attack (4).ogg'), 100, FALSE, -1)
 		if(istype(AM, /obj/item))
 			if(is_type_in_list(AM, eatablez))
 				aggroed = world.time
@@ -170,3 +170,4 @@
 	if(!aggroed)
 		update_appearance(UPDATE_ICON_STATE | UPDATE_NAME)
 	aggroed = world.time
+*/

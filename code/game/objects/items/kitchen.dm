@@ -66,7 +66,7 @@
 	throwforce = 5
 	throw_speed = 1
 	throw_range = 7
-	w_class = WEIGHT_CLASS_NORMAL
+	w_class = WEIGHT_CLASS_SMALL
 	attack_verb = list("bashed", "battered", "bludgeoned", "thrashed", "whacked")
 	custom_price = 5
 	resistance_flags = FLAMMABLE // Weapon made mostly of wood
@@ -81,7 +81,7 @@
 /obj/item/tablecloth/silk
 	name = "silk tablecloth"
 	desc = "A fancy silk tablecloth, laid out for diplomatic feasts and other important events."
-	icon = 'icons/roguetown/items/cooking.dmi'
+	icon = 'modular_rmh/icons/obj/items/cooking.dmi'
 	icon_state = "tablecloth_silk"
 	sellprice = 40
 	w_class = WEIGHT_CLASS_NORMAL

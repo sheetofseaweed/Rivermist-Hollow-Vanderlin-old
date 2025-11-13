@@ -8,6 +8,8 @@
 	earliest_start = 25 MINUTES
 
 	tags = list(
+		TAG_ZIZO,
+		TAG_GRAGGAR,
 		TAG_HAUNTED,
 		TAG_COMBAT,
 		TAG_VILLIAN,
@@ -17,15 +19,3 @@
 	if(GLOB.maniac_highlander) // Has a Maniac already TRIUMPHED?
 		return FALSE
 	. = ..()
-
-/datum/migrant_wave/maniac
-	name = "Crazed Adventurer"
-	roles = list(
-		/datum/migrant_role/maniac = 1,
-	)
-	can_roll = FALSE
-
-/datum/migrant_role/maniac
-	name = "Crazed Adventurer"
-	antag_datum = /datum/antagonist/maniac
-	advclass_cat_rolls = list(CTAG_ADVENTURER = 5)

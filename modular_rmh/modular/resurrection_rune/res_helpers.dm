@@ -13,7 +13,7 @@ GLOBAL_LIST_EMPTY(global_resurrunes)
 /atom/movable/screen/alert/status_effect/debuff/revived/rune
 	name = "Rune Fatigue"
 	desc = "You felt unfathomable forces course through you, restoring your body and your essance. Your body aches, and you can barely lift your arms, let alone fight."
-	icon_state = "revived"
+	icon_state = "beauty"
 
 /datum/status_effect/debuff/revived/rune/on_apply()
 	. = ..()
@@ -32,7 +32,7 @@ GLOBAL_LIST_EMPTY(global_resurrunes)
 /atom/movable/screen/alert/status_effect/debuff/revived/rune/rough
 	name = "Rune Fatigue (rough)"
 	desc = "You felt an alien force course through you, restoring your body and your essance almost against your will. Your body aches, and you can barely lift your arms, let alone fight."
-	icon_state = "revived"
+	icon_state = "beauty"
 
 #define REVIVAL_FILTER "revival_glow"
 ///atom/movable/screen/alert/status_effect/debuff/rune_glow

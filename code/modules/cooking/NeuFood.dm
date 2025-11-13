@@ -160,11 +160,11 @@
 	reagent_flags = TRANSFERABLE | AMOUNT_VISIBLE
 	force = 5
 	throwforce = 5
-	amount_per_transfer_from_this = 6
-	possible_transfer_amounts = list(6)
+	amount_per_transfer_from_this = 5
+	possible_transfer_amounts = list(5)
 	dropshrink = 0.8
 	w_class = WEIGHT_CLASS_SMALL
-	volume = 24
+	volume = 25
 	obj_flags = CAN_BE_HIT
 	sellprice = 1
 	drinksounds = list('sound/items/drink_cup (1).ogg','sound/items/drink_cup (2).ogg','sound/items/drink_cup (3).ogg','sound/items/drink_cup (4).ogg','sound/items/drink_cup (5).ogg')
@@ -182,6 +182,7 @@
 /obj/item/reagent_containers/glass/bowl/gold
 	name = "gold bowl"
 	fill_icon_state = "bowl"
+	icon = 'modular_rmh/icons/obj/items/cooking.dmi'
 	icon_state = "bowl_gold"
 	drop_sound = 'sound/foley/dropsound/armor_drop.ogg'
 	melting_material = /datum/material/gold
@@ -191,6 +192,7 @@
 /obj/item/reagent_containers/glass/bowl/silver
 	name = "silver bowl"
 	icon_state = "bowl_silver"
+	icon = 'modular_rmh/icons/obj/items/cooking.dmi'
 	drop_sound = 'sound/foley/dropsound/armor_drop.ogg'
 	melting_material = /datum/material/silver
 	sellprice = 30
@@ -202,6 +204,72 @@
 	drop_sound = 'sound/foley/dropsound/armor_drop.ogg'
 	melting_material = /datum/material/tin
 	melt_amount = 20
+
+/obj/item/reagent_containers/glass/bowl/jade
+	name = "joapstone bowl"
+	desc = "A bowl carved out of joapstone."
+	icon_state = "bowl_jade"
+	fill_icon_state = "bowl"
+	drop_sound = 'sound/foley/dropsound/armor_drop.ogg'
+	sellprice = 55
+
+/obj/item/reagent_containers/glass/bowl/onyxa
+	name = "onyxa bowl"
+	desc = "A bowl carved out of onyxa."
+	icon_state = "bowl_onyxa"
+	fill_icon_state = "bowl"
+	drop_sound = 'sound/foley/dropsound/armor_drop.ogg'
+	sellprice = 35
+
+/obj/item/reagent_containers/glass/bowl/rose
+	name = "rosellusk bowl"
+	desc = "A bowl carved out of rosellusk."
+	icon_state = "bowl_rose"
+	fill_icon_state = "bowl"
+	drop_sound = 'sound/foley/dropsound/armor_drop.ogg'
+	sellprice = 20
+
+/obj/item/reagent_containers/glass/bowl/amber
+	name = "petriamber bowl"
+	desc = "A bowl carved out of petriamber."
+	icon_state = "bowl_amber"
+	fill_icon_state = "bowl"
+	drop_sound = 'sound/foley/dropsound/armor_drop.ogg'
+	sellprice = 55
+
+/obj/item/reagent_containers/glass/bowl/turq
+	name = "ceruleabaster bowl"
+	desc = "A bowl carved out of ceruleabaster."
+	icon_state = "bowl_turq"
+	fill_icon_state = "bowl"
+	drop_sound = 'sound/foley/dropsound/armor_drop.ogg'
+	sellprice = 80
+
+/obj/item/reagent_containers/glass/bowl/shell
+	name = "shell bowl"
+	desc = "A bowl carved out of shell."
+	icon_state = "bowl_shell"
+	fill_icon_state = "bowl"
+	drop_sound = 'sound/foley/dropsound/armor_drop.ogg'
+	sellprice = 15
+
+
+/obj/item/reagent_containers/glass/bowl/coral
+	name = "aoetal bowl"
+	desc = "A bowl carved out of aoetal."
+	icon_state = "bowl_coral"
+	fill_icon_state = "bowl"
+	drop_sound = 'sound/foley/dropsound/armor_drop.ogg'
+	sellprice = 65
+
+/obj/item/reagent_containers/glass/bowl/opal
+	name = "opaloise bowl"
+	desc = "A bowl carved out of opaloise."
+	icon_state = "bowl_opal"
+	fill_icon_state = "bowl"
+	drop_sound = 'sound/foley/dropsound/armor_drop.ogg'
+	sellprice = 85
+
 
 /obj/item/reagent_containers/glass/bowl/clay
 	desc = "Made from fired clay."
@@ -416,7 +484,7 @@
 		if(prob(12))
 			M.emote("gag")
 			M.add_nausea(9)
-			if(isdwarf(M))
+			if(HAS_TRAIT(M, TRAIT_POISON_RESILIENCE))
 				M.adjustToxLoss(2)
 			else
 				M.adjustToxLoss(5)

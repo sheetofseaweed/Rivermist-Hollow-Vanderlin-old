@@ -51,7 +51,7 @@
 /obj/item/clothing/armor/gambeson/heavy/colored/dark
 	color = CLOTHING_DARK_INK
 
-/obj/item/clothing/armor/gambeson/lakkarijupon
+/obj/item/clothing/armor/gambeson/heavy/lakkarijupon
 	name = "lakkarian jupon"
 	desc = "a thick, quilted jupon with an iron heart protector. Apart of the standard traveling uniform for Lakkarian clerics. It's great for the southern desert's heat and northern tundra's cold."
 	icon_state = "lakkarijupon"
@@ -144,3 +144,13 @@
 /obj/item/clothing/armor/gambeson/light/striped/Initialize()
 	color = pick(CLOTHING_SALMON, CLOTHING_BERRY_BLUE, CLOTHING_SPRING_GREEN, CLOTHING_PEAR_YELLOW)
 	return ..()
+
+/obj/item/clothing/armor/gambeson/heavy/inq
+	name = "inquisitorial leather tunic"
+	desc = "The finest leather tunic. Made to ENDURE, Made to Inquire, come heretic or hellfire."
+	icon_state = "leathertunic"
+	color = null
+	prevent_crits = list(BCLASS_CUT, BCLASS_BLUNT, BCLASS_CHOP)
+	armor = ARMOR_PADDED
+	body_parts_covered = COVERAGE_ALL_BUT_LEGS
+

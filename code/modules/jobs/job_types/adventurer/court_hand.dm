@@ -6,7 +6,7 @@
 	Your position is anything but secure, and any mistake can leave you disowned and charged like the petty criminal you are. \
 	Garrison and Court members know who you are."
 	job_flags = (JOB_EQUIP_RANK | JOB_NEW_PLAYER_JOINABLE)
-	total_positions = 0
+	total_positions = 1
 	spawn_positions = 2
 	min_pq = 10
 
@@ -17,13 +17,10 @@
 	job_reopens_slots_on_death = FALSE
 	shows_in_list = FALSE
 	can_have_apprentices = FALSE
-
-/datum/job/adventurer/courtagent
+	scales = FALSE
 
 //Hooking in here does not mess with their equipment procs
 /datum/job/adventurer/courtagent/after_spawn(mob/living/spawned, client/player_client)
 	if(ishuman(spawned))
 		GLOB.roundstart_court_agents += spawned.real_name
 	..()
-	if(advclass_cat_rolls)
-		hugboxify_for_class_selection(spawned)

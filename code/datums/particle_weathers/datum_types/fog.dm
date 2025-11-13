@@ -37,7 +37,7 @@
 
 /obj/effect/fog_parter
 	icon = 'icons/effects/light_overlays/light_288.dmi'
-	icon_state = "light2"
+	icon_state = "light"
 	plane = PLANE_FOG_CUTTER
 	invisibility = INVISIBILITY_LIGHTING
 	mouse_opacity = MOUSE_OPACITY_TRANSPARENT
@@ -81,8 +81,8 @@
 	particleEffectType = /particles/weather/fog
 
 	scale_vol_with_severity = TRUE
-	weather_sounds = list(/datum/looping_sound/rain)
-	indoor_weather_sounds = list(/datum/looping_sound/indoor_rain)
+	weather_sounds = /datum/looping_sound/rain
+	indoor_weather_sounds = /datum/looping_sound/indoor_rain
 
 	weather_duration_upper = 10 MINUTES
 	minSeverity = 5

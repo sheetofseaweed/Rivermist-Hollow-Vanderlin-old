@@ -136,6 +136,7 @@ h1.alert, h2.alert	{color: #c9c1ba;font-family: Mookmania, TrueType;}
 .hellspeak				{font-family: "Comforter Brush", Mookmania;}
 .undead					{font-family: "FDMedian", Mookmania;}
 .orc					{font-family: "VizaviTYGRA", Mookmania;}
+.otavan					{font-family: "Notredame", Mookmania; font-size: 200%;}
 .beast					{font-family: "VizaviTYGRA", Mookmania;}
 .deepspeak				{font-family: "Underwater Love", Mookmania;}
 

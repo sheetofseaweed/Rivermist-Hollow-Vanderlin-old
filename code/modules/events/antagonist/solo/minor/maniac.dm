@@ -1,6 +1,8 @@
 /datum/round_event_control/antagonist/solo/maniac
 	name = "Maniacs"
 	tags = list(
+		TAG_ZIZO,
+		TAG_GRAGGAR,
 		TAG_VILLIAN,
 		TAG_HAUNTED
 	)
@@ -37,7 +39,7 @@
 		/datum/round_event_control/antagonist/solo/werewolf,
 		/datum/round_event_control/antagonist/solo/zizo_cult
 	)
-	secondary_prob = 60
+	secondary_prob = 90
 	typepath = /datum/round_event/antagonist/solo/maniac
 
 /datum/round_event_control/antagonist/solo/maniac/canSpawnEvent(players_amt, gamemode, fake_check)

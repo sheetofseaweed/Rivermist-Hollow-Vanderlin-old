@@ -69,6 +69,9 @@
 /obj/item
 	var/genitalaccess = FALSE
 
+/obj/item/organ/genitals
+	var/visible_through_clothes = FALSE
+
 //we handle all of this here because cant timer another goddamn thing from here correctly.
 /obj/item/organ/genitals/filling_organ/vagina/proc/be_impregnated()
 	if(!owner)
@@ -103,7 +106,7 @@
 /obj/item/organ/genitals/filling_organ/vagina/proc/handle_preggoness()
 	if(owner.getorganslot(ORGAN_SLOT_BELLY))
 		var/obj/item/organ/genitals/belly/bellyussy = owner.getorganslot(ORGAN_SLOT_BELLY)
-		if(bellyussy.organ_size < 3)
+		if(bellyussy.organ_size < BELLY_SIZE_SMALL) //yes it only grows one size, maybe change later
 			if(prob(30))
 				to_chat(owner, span_love("I notice my belly has grown due to pregnancy...")) //dont need to repeat this probably if size cant grow anyway.
 				bellyussy.organ_size = bellyussy.organ_size + 1

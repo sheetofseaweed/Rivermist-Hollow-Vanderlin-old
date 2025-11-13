@@ -3,12 +3,12 @@
 	if(iscarbon(victim))
 		var/mob/living/carbon/carbon_victim = victim
 		for(var/obj/item/equipped_item in carbon_victim.get_equipped_items(include_pockets = FALSE))
-			if(zone2covered(location, equipped_item.body_parts_covered))
+			if(zone2covered(location, equipped_item.body_parts_covered) && equipped_item.surgery_cover)
 				return FALSE
 		if(ishuman(carbon_victim))
 			var/mob/living/carbon/human/human_victim = carbon_victim
 			if(!skipundies)
-				if(human_victim.underwear != "Nude")
+				if(human_victim.underwear)
 					covered_locations |= GROIN
 			if(grabs)
 				for(var/obj/item/grabbing/grab in human_victim.grabbedby)

@@ -27,6 +27,10 @@
 	default_color = "FFFFFF"
 	species_traits = list(EYECOLOR, HAIR, FACEHAIR, LIPS, STUBBLE, OLDGREY)
 	inherent_traits = list(TRAIT_NOMOBSWAP)
+	inherent_skills = list(
+		/datum/skill/misc/reading = 1,
+	)
+
 	use_skintones = TRUE
 
 	possible_ages = NORMAL_AGES_LIST_CHILD
@@ -85,6 +89,9 @@
 		/datum/customizer/bodypart_feature/hair/facial/humanoid,
 		/datum/customizer/bodypart_feature/accessory,
 		/datum/customizer/bodypart_feature/face_detail,
+		/datum/customizer/bodypart_feature/underwear,
+		/datum/customizer/bodypart_feature/legwear,
+		/datum/customizer/bodypart_feature/piercing,
 		/datum/customizer/organ/genitals/penis/human,
 		/datum/customizer/organ/genitals/vagina/human,
 		/datum/customizer/organ/genitals/breasts/human,
@@ -95,6 +102,35 @@
 
 	body_markings = list(
 		/datum/body_marking/tonage,
+		/datum/body_marking/womb_tattoo,
+		/datum/body_marking/butterfly,
+		/datum/body_marking/waist,
+		/datum/body_marking/diagonal_eyes,
+		/datum/body_marking/wide_eyes,
+		/datum/body_marking/stripes,
+		/datum/body_marking/plain,
+		/datum/body_marking/spotted,
+		/datum/body_marking/tiger,
+		/datum/body_marking/tiger/dark,
+		/datum/body_marking/sock,
+		/datum/body_marking/sock/tertiary,
+		/datum/body_marking/socklonger,
+		/datum/body_marking/tips,
+		/datum/body_marking/bellyscale,
+		/datum/body_marking/kobold_scale,
+		/datum/body_marking/bellyscaleslim,
+		/datum/body_marking/bellyscalesmooth,
+		/datum/body_marking/bellyscaleslimsmooth,
+		/datum/body_marking/buttscale,
+		/datum/body_marking/belly,
+		/datum/body_marking/bellyslim,
+		/datum/body_marking/tie,
+		/datum/body_marking/butt,
+		/datum/body_marking/tiesmall,
+		/datum/body_marking/backspots,
+		/datum/body_marking/front,
+		/datum/body_marking/flushed_cheeks,
+		/datum/body_marking/eyeliner,
 	)
 
 /datum/species/human/northern/check_roundstart_eligible()
@@ -111,8 +147,14 @@
 		"Subtropical" = SKIN_COLOR_SUBTROPICAL, // - (Mediterranean)
 		"Tropical Dry" = SKIN_COLOR_TROPICALDRY, // - (Mediterranean 2)
 		"Tropical Wet" = SKIN_COLOR_TROPICALWET, // - (Latin 2)
-		"Desert" = SKIN_COLOR_DESERT, //  - (Middle-east)
+		"Desert" = SKIN_COLOR_DESERT, //  - (Middle-east 1)
+		"Oasis" = SKIN_COLOR_OASIS, // - (Middle-east 2)
 		"Crimson Lands" = SKIN_COLOR_CRIMSONLANDS, // - (Black)
+		"Volcanic" = SKIN_COLOR_VOLCANIC, // - Melanesian
+		"Island" = SKIN_COLOR_ISLAND, // - Polynesian
+		"Taiga" = SKIN_COLOR_TAIGA, // - Native American 1
+		"Swamp" = SKIN_COLOR_SWAMP, // - Native American 2
+
 	))
 
 /datum/species/human/northern/get_hairc_list()
@@ -137,8 +179,9 @@
 	"red - wine" = "82534c",
 	"red - sunset" = "82462b",
 	"red - blood" = "822b2b",
-	"red - maroon" = "612929"
+	"red - maroon" = "612929",
 
+	"orange - rust" = "bc5e35"
 	))
 
 /datum/species/human/northern/get_possible_names(gender = MALE)

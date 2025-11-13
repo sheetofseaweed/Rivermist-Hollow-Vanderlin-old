@@ -51,7 +51,7 @@
 		sex_session.perform_sex_action(target, 2.4, 7, TRUE)
 	sex_session.handle_passive_ejaculation(target)
 
-	sex_session.perform_sex_action(target, 2, 4, FALSE)
+	sex_session.perform_sex_action(user, 2, 4, FALSE)
 
 /datum/sex_action/sex/other/vagina/handle_climax_message(mob/living/carbon/human/user, mob/living/carbon/human/target)
 	target.visible_message(span_love("[target] cums into [user]'s cunt!"))

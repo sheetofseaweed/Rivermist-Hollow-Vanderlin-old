@@ -80,9 +80,18 @@
 	if(!msg && nomsg == FALSE)
 		return
 
+	var/collective_span = ""
+	if(ishuman(user))
+		var/mob/living/carbon/human/human_speaker = user
+		// Find any collective this person is involved in
+		for(var/datum/collective_message/collective in GLOB.sex_collectives)
+			if(human_speaker in collective.involved_mobs)
+				collective_span = " [collective.collective_span_class]"
+				break
+
 	if(!nomsg)
 		user.log_message(msg, LOG_EMOTE)
-		msg = "<b>[user]</b> " + msg
+		msg = "<span class = '[collective_span]'><b>[user]</b> " + msg + "</span>"
 
 	var/pitch = 1 //bespoke vary system so deep voice/high voiced humans
 	if(isliving(user))
@@ -157,13 +166,42 @@
 			var/modifier
 			if(H.age == AGE_OLD)
 				modifier = "old"
-			if(!ignore_silent && (H.silent || !H.can_speak()))
+			if(!ignore_silent && (H.silent || !H.can_speak())|| (!ignore_silent && HAS_TRAIT(H, TRAIT_MUTE)) || (!ignore_silent && HAS_TRAIT(H, TRAIT_BAGGED)))
 				modifier = "silenced"
 			if(user.gender == FEMALE && H.dna.species.soundpack_f)
 				possible_sounds = H.dna.species.soundpack_f.get_sound(key,modifier)
 			else if(H.dna.species.soundpack_m)
 				possible_sounds = H.dna.species.soundpack_m.get_sound(key,modifier)
-			if(H.voice_type)
+			//RMH ADD - manual voicepack selection
+			if(H.moan_selection && (key in list("sexmoanlight","sexmoanmed","sexmoanhvy","groan","painmoan","whimper","sexmoangag","sexmoangag_org")))
+				var/datum/moan_pack/vpath = new H.moan_selection
+				switch(key)
+					if("sexmoanlight")
+						if(vpath.sounds_sexmoanlight)
+							possible_sounds = vpath.get_moans(key)
+					if("sexmoanmed")
+						if(vpath.sounds_sexmoanmed)
+							possible_sounds = vpath.get_moans(key)
+					if("sexmoanhvy")
+						if(vpath.sounds_sexmoanhvy)
+							possible_sounds = vpath.get_moans(key)
+					if("groan")
+						if(vpath.sounds_groan)
+							possible_sounds = vpath.get_moans(key)
+					if("painmoan")
+						if(vpath.sounds_painmoan)
+							possible_sounds = vpath.get_moans(key)
+					if("whimper")
+						if(vpath.sounds_whimper)
+							possible_sounds = vpath.get_moans(key)
+					if("sexmoangag")
+						if(vpath.sounds_sexmoangag)
+							possible_sounds = vpath.get_moans(key)
+					if("sexmoangag_org")
+						if(vpath.sounds_sexmoangag_org)
+							possible_sounds = vpath.get_moans(key)
+
+			else if(H.voice_type)
 				switch (H.voice_type)
 					if (VOICE_TYPE_MASC)
 						possible_sounds = H.dna.species.soundpack_m.get_sound(key, modifier)
@@ -206,7 +244,12 @@
 		var/mob/living/carbon/C = user
 		if(C.silent || !C.can_speak_vocal())
 			. = message_muffled
-	if(!muzzle_ignore && user.is_muzzled() && emote_type == EMOTE_AUDIBLE)
+		if(!muzzle_ignore && C.mouth?.muteinmouth && emote_type == EMOTE_AUDIBLE)
+			. = message_muffled
+		if(!muzzle_ignore && emote_type == EMOTE_AUDIBLE && HAS_TRAIT(C, TRAIT_BAGGED))
+			. = message_muffled
+
+	if(!muzzle_ignore && HAS_TRAIT(user, TRAIT_MUTE) && emote_type == EMOTE_AUDIBLE)
 		return "makes a [pick("strong ", "weak ", "")]noise."
 	if(user.mind && user.mind.miming && message_mime)
 		. = message_mime

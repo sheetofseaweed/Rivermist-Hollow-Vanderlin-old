@@ -20,11 +20,22 @@
 			user.add_stress(/datum/stress_event/beautiful_self)
 		else
 			user.add_stress(/datum/stress_event/beautiful)
-	if(HAS_TRAIT(src, TRAIT_UGLY) && user != src)
+	if(HAS_TRAIT(src, TRAIT_UGLY) &&  user != src)
 		if(user == src)
 			user.add_stress(/datum/stress_event/ugly_self)
 		else
 			user.add_stress(/datum/stress_event/ugly)
+	if(HAS_TRAIT(src, TRAIT_FISHFACE))
+		if(HAS_TRAIT(user, TRAIT_FISHFACE))
+			if(user == src)
+				user.add_stress(/datum/stress_event/self_fishface)
+			else
+				user.add_stress(/datum/stress_event/fellow_fishface)
+		else
+			if(user.age == AGE_CHILD)
+				user.add_stress(/datum/stress_event/fish_monster)
+			else
+				user.add_stress(/datum/stress_event/fishface)
 	if(HAS_TRAIT(src, TRAIT_OLDPARTY) && HAS_TRAIT(user, TRAIT_OLDPARTY) && user != src)
 		user.add_stress(/datum/stress_event/saw_old_party)
 
@@ -87,7 +98,7 @@
 
 		if(race_name) // race name
 			appendage_to_name += " [race_name]"
- // job name, don't show job of foreigners.
+// job name, don't show job of foreigners.
 
 		if(used_title && !HAS_TRAIT(src, TRAIT_FACELESS) && (!HAS_TRAIT(src, TRAIT_FOREIGNER) || HAS_TRAIT(src, TRAIT_RECRUITED) || HAS_TRAIT(src, TRAIT_RECOGNIZED)))
 			appendage_to_name += ", [used_title]"
@@ -137,7 +148,6 @@
 				. += span_love(span_bold("[self_inspect ? "I am" : "[t_He] is"] [is_male ? "handsome" : "beautiful"]!"))
 			if(HAS_TRAIT(src, TRAIT_UGLY))
 				. += span_necrosis(span_bold("[self_inspect ? "I am" : "[t_He] is"] hideous."))
-
 		if(length(GLOB.tennite_schisms))
 			var/datum/tennite_schism/S = GLOB.tennite_schisms[1]
 			var/user_side = (WEAKREF(user) in S.supporters_astrata) ? "astrata" : (WEAKREF(user) in S.supporters_challenger) ? "challenger" : null
@@ -151,15 +161,36 @@
 		if(HAS_TRAIT(src, TRAIT_FOREIGNER) && !HAS_TRAIT(user, TRAIT_FOREIGNER))
 			. += span_phobia("A foreigner...")
 
+		if(has_flaw(/datum/charflaw/addiction/alcoholic) && HAS_TRAIT(user, TRAIT_RECOGNIZE_ADDICTS))
+			. += span_userdanger("ALCOHOLIC!")
+
+		if(has_flaw(/datum/charflaw/addiction/junkie) && HAS_TRAIT(user, TRAIT_RECOGNIZE_ADDICTS))
+			. += span_userdanger("JUNKIE!")
+
+		if(HAS_TRAIT(src, TRAIT_FISHFACE) && HAS_TRAIT(user, TRAIT_FISHFACE))
+			if(user == src)
+				. += span_green("I don't look that bad, I just look different to other species.")
+			else
+				. += span_green("A fellow triton")
+
+		if(HAS_TRAIT(src, TRAIT_FISHFACE) && !HAS_TRAIT(user, TRAIT_FISHFACE))
+			var/mob/living/carbon/human/H = user
+			if(H.age == AGE_CHILD)
+				. += span_userdanger("IT'S A HORRIBLE MONSTER!!!")
+				user.emote("scream")
+			else
+				. += span_necrosis("That fish is ugly!")
+
 		if(real_name in GLOB.excommunicated_players)
 			. += span_userdanger("EXCOMMUNICATED!")
 
 		if(real_name in GLOB.heretical_players)
 			. += span_userdanger("HERETIC! SHAME!")
 
-		if(iszizocultist(user) || iszizolackey(user))
-			if(virginity)
-				. += span_userdanger("VIRGIN!")
+		if(user.mind)
+			if(is_zizocultist(user.mind) || is_zizolackey(user.mind))
+				if(virginity)
+					. += span_userdanger("VIRGIN!")
 
 		var/is_bandit = FALSE
 		if(mind?.special_role == "Bandit")
@@ -167,7 +198,7 @@
 			if((real_name in GLOB.outlawed_players) && HAS_TRAIT(user, TRAIT_KNOWBANDITS))
 				. += span_userdanger("BANDIT!")
 
-		if(mind && mind.special_role == "Vampire Lord")
+		if(mind && mind?.special_role == "Vampire Lord")
 			var/datum/component/vampire_disguise/disguise_comp = GetComponent(/datum/component/vampire_disguise)
 			if(!disguise_comp.disguised)
 				. += span_userdanger("A MONSTER!")
@@ -189,8 +220,33 @@
 			if((HAS_TRAIT(src, TRAIT_CABAL) && HAS_TRAIT(user, TRAIT_CABAL)) || (src.patron?.type == /datum/patron/inhumen/zizo && HAS_TRAIT(user, TRAIT_CABAL)))
 				. += span_purple("A fellow seeker of Her ascension.")
 
+			var/inquisition_text =get_inquisition_text(user)
+			if(inquisition_text)
+				. +=span_notice(inquisition_text)
+
 		if(HAS_TRAIT(src, TRAIT_LEPROSY))
 			. += span_necrosis("A LEPER...")
+
+		if(HAS_TRAIT(user, TRAIT_ROYALSERVANT))
+			if(length(culinary_preferences) && family_datum == SSfamilytree.ruling_family)
+				var/obj/item/reagent_containers/food/snacks/fav_food = src.culinary_preferences[CULINARY_FAVOURITE_FOOD]
+				var/datum/reagent/consumable/fav_drink = src.culinary_preferences[CULINARY_FAVOURITE_DRINK]
+				if(fav_food)
+					if(fav_drink)
+						. += span_notice("Their favourites are [fav_food.name] and [fav_drink.name].")
+					else
+						. += span_notice("Their favourite is [fav_food.name].")
+				else if(fav_drink)
+					. += span_notice("Their favourite is [fav_drink.name].")
+				var/obj/item/reagent_containers/food/snacks/hated_food = src.culinary_preferences[CULINARY_HATED_FOOD]
+				var/datum/reagent/consumable/hated_drink = src.culinary_preferences[CULINARY_HATED_DRINK]
+				if(hated_food)
+					if(hated_drink)
+						. += span_notice("They hate [hated_food.name] and [hated_drink.name].")
+					else
+						. += span_notice("They hate [hated_food.name].")
+				else if(hated_drink)
+					. += span_notice("They hate [hated_drink.name].")
 
 	if(HAS_TRAIT(src, TRAIT_MANIAC_AWOKEN))
 		. += span_userdanger("MANIAC!")
@@ -284,7 +340,7 @@
 		. += "[m3] [wear_neck.get_examine_string(user)] around [m2] neck."
 
 	if(get_eye_color() == BLOODCULT_EYE)
-		. += "<span class='warning'><B>[capitalize(m2)] eyes are glowing an unnatural red!</B></span>"
+		. += span_warning("<B>[capitalize(m2)] eyes are glowing an unnatural red!</B>")
 
 	//ID
 	if(wear_ring && !(obscured & ITEM_SLOT_RING))
@@ -299,6 +355,10 @@
 
 	if(legcuffed)
 		. += "<A href='byond://?src=[REF(src)];item=[ITEM_SLOT_LEGCUFFED]'><span class='warning'>[m3] \a [legcuffed] around [m2] legs!</span></A>"
+
+	var/datum/status_effect/bugged/effect = has_status_effect(/datum/status_effect/bugged)
+	if(effect && HAS_TRAIT(user, TRAIT_INQUISITION))
+		. += "<A href='?src=[REF(src)];item=[effect.device]'><span class='warning'>[m3] \a [effect.device] implanted.</span></A>"
 
 	//Gets encapsulated with a warning span
 	var/list/msg = list()
@@ -333,16 +393,16 @@
 				msg += "<span class='danger'>[m1] gravely wounded.</span>"
 
 	// Blood volume
-	switch(blood_volume)
-		if(-INFINITY to BLOOD_VOLUME_SURVIVE)
-			msg += "<span class='artery'><B>[m1] extremely pale and sickly.</B></span>"
-		if(BLOOD_VOLUME_SURVIVE to BLOOD_VOLUME_BAD)
-			msg += "<span class='artery'><B>[m1] very pale.</B></span>"
-		if(BLOOD_VOLUME_BAD to BLOOD_VOLUME_OKAY)
-			msg += "<span class='artery'>[m1] pale.</span>"
-		if(BLOOD_VOLUME_OKAY to BLOOD_VOLUME_SAFE)
-			msg += "<span class='artery'>[m1] a little pale.</span>"
-
+	if(!SEND_SIGNAL(src, COMSIG_DISGUISE_STATUS))
+		switch(blood_volume)
+			if(-INFINITY to BLOOD_VOLUME_SURVIVE)
+				msg += "<span class='artery'><B>[m1] extremely pale and sickly.</B></span>"
+			if(BLOOD_VOLUME_SURVIVE to BLOOD_VOLUME_BAD)
+				msg += "<span class='artery'><B>[m1] very pale.</B></span>"
+			if(BLOOD_VOLUME_BAD to BLOOD_VOLUME_OKAY)
+				msg += "<span class='artery'>[m1] pale.</span>"
+			if(BLOOD_VOLUME_OKAY to BLOOD_VOLUME_SAFE)
+				msg += "<span class='artery'>[m1] a little pale.</span>"
 	// Bleeding
 	var/bleed_rate = get_bleed_rate()
 	if(bleed_rate)
@@ -372,14 +432,14 @@
 			bleeding_limbs += parse_zone(bleeder.body_zone)
 		if(length(bleeding_limbs))
 			if(bleed_rate >= 5)
-				msg += "<span class='bloody'><B>[capitalize(m2)] [english_list(bleeding_limbs)] [bleeding_limbs.len > 1 ? "are" : "is"] [bleed_wording]!</B></span>"
+				msg += span_bloody("<B>[capitalize(m2)] [english_list(bleeding_limbs)] [bleeding_limbs.len > 1 ? "are" : "is"] [bleed_wording]!</B>")
 			else
-				msg += "<span class='bloody'>[capitalize(m2)] [english_list(bleeding_limbs)] [bleeding_limbs.len > 1 ? "are" : "is"] [bleed_wording]!</span>"
+				msg += span_bloody("[capitalize(m2)] [english_list(bleeding_limbs)] [bleeding_limbs.len > 1 ? "are" : "is"] [bleed_wording]!")
 		else
 			if(bleed_rate >= 5)
-				msg += "<span class='bloody'><B>[m1] [bleed_wording]</B>!</span>"
+				msg += span_bloody("<B>[m1] [bleed_wording]</B>!")
 			else
-				msg += "<span class='bloody'>[m1] [bleed_wording]!</span>"
+				msg += span_bloody("[m1] [bleed_wording]!")
 
 	// Missing limbs
 	var/missing_head = FALSE
@@ -392,9 +452,9 @@
 	if(length(missing_limbs))
 		var/missing_limb_message = "<B>[capitalize(m2)] [english_list(missing_limbs)] [missing_limbs.len > 1 ? "are" : "is"] gone.</B>"
 		if(missing_head)
-			missing_limb_message = "<span class='dead'>[missing_limb_message]</span>"
+			missing_limb_message = span_dead("[missing_limb_message]")
 		else
-			missing_limb_message = "<span class='danger'>[missing_limb_message]</span>"
+			missing_limb_message = span_danger("[missing_limb_message]")
 		msg += missing_limb_message
 
 	//Grabbing
@@ -501,7 +561,7 @@
 				msg += "[m1] twitching ever so slightly."
 
 		if(InCritical())
-			msg += "<span class='warning'>[m1] barely conscious.</span>"
+			msg += span_warning("[m1] barely conscious.")
 		else
 			if(stat >= UNCONSCIOUS)
 				msg += "[m1] [IsSleeping() ? "sleeping" : "unconscious"]."
@@ -523,13 +583,96 @@
 //				msg += "[m3] a blank, absent-minded stare and appears completely unresponsive to anything. [t_He] may snap out of it soon."
 
 	if(length(msg))
-		. += "<span class='warning'>[msg.Join("\n")]</span>"
+		. += span_warning("[msg.Join("\n")]")
+
+	var/list/organ_desc = list()
+	var/show_undie_desc = FALSE
+	var/show_naked_desc = FALSE
+	var/list/arousal_data = list()
+	SEND_SIGNAL(src, COMSIG_SEX_GET_AROUSAL, arousal_data)
+	if(wear_pants)
+		var/obj/item/clothing/pantsies = wear_pants
+		if(pantsies.flags_inv & HIDECROTCH)
+			if(!pantsies.genitalaccess)
+				if(arousal_data["arousal"] > VISIBLE_AROUSAL_THRESHOLD)
+					if(getorganslot(ORGAN_SLOT_PENIS))
+						organ_desc += "[capitalize(m3)] a visible bulge in [m2] [pantsies.name]."
+					if(getorganslot(ORGAN_SLOT_VAGINA))
+						organ_desc += "[capitalize(m1)] shifting their legs uncomfortably."
+					//show_pant_desc = TRUE
+		else if(underwear)
+			if(arousal_data["arousal"] > VISIBLE_AROUSAL_THRESHOLD)
+				if(getorganslot(ORGAN_SLOT_PENIS))
+					organ_desc += "[capitalize(m1)] pitching a tent in [m2] [underwear.name]."
+				if(getorganslot(ORGAN_SLOT_VAGINA))
+					organ_desc += "[capitalize(m3)] a wet spot on [m2] [underwear.name]."
+				show_undie_desc = TRUE
+		else
+			if(arousal_data["arousal"] > VISIBLE_AROUSAL_THRESHOLD)
+				if(getorganslot(ORGAN_SLOT_PENIS))
+					var/obj/item/organ/genitals/penis/pen = getorganslot(ORGAN_SLOT_PENIS)
+					organ_desc += "[capitalize(m2)] [pen.name] is visibly erect!"
+				if(getorganslot(ORGAN_SLOT_VAGINA))
+					var/obj/item/organ/genitals/filling_organ/vagina/vag = getorganslot(ORGAN_SLOT_VAGINA)
+					organ_desc += "[capitalize(m2)] [vag.name] is glistening with arousal!"
+				show_naked_desc = TRUE
+
+	else if(underwear && !show_undie_desc)
+		if(arousal_data["arousal"] > VISIBLE_AROUSAL_THRESHOLD)
+			if(getorganslot(ORGAN_SLOT_PENIS))
+				organ_desc += "[capitalize(m1)] pitching a tent in [m2] [underwear.name]."
+			if(getorganslot(ORGAN_SLOT_VAGINA))
+				organ_desc += "[capitalize(m3)] a wet spot on [m2] [underwear.name]."
+			show_undie_desc = TRUE
+
+	else if(arousal_data["arousal"] > VISIBLE_AROUSAL_THRESHOLD && !show_naked_desc)
+		if(getorganslot(ORGAN_SLOT_PENIS))
+			var/obj/item/organ/genitals/penis/pen = getorganslot(ORGAN_SLOT_PENIS)
+			organ_desc += "[capitalize(m2)] [pen.name] is visibly erect!"
+		if(getorganslot(ORGAN_SLOT_VAGINA))
+			var/obj/item/organ/genitals/filling_organ/vagina/vag = getorganslot(ORGAN_SLOT_VAGINA)
+			organ_desc += "[capitalize(m2)] [vag.name] is glistening with arousal!"
+		show_naked_desc = TRUE
+
+	if(length(organ_desc))
+		. += span_love("[organ_desc.Join("\n")]")
+
+	//The Nymphomaniac Underground
+	if((!appears_dead) && stat == CONSCIOUS && src.has_flaw(/datum/charflaw/addiction/lovefiend))
+		var/datum/charflaw/addiction/bonercheck = src.charflaw
+		if((bonercheck) && (bonercheck.sated == 0))
+			if(user.has_flaw(/datum/charflaw/addiction/lovefiend)) //Takes one to know one
+				switch(rand(1,5))
+					if(1)
+						. += span_love("I can sense [m2] <B>need</B> for fun...")
+					if(2)
+						. += span_love("[m1] <B>aching</B> for a release.")
+					if(3)
+						. += span_love("A carnal need <B>stirs</B> within [m2] core.")
+					if(4)
+						. += span_love("I can practically feel [m2] <B>horniness</B>...")
+					if(5)
+						. += span_love("Embers of desire <B>smolder</B> within [m2].")
+			else if(Adjacent(user)) //No nympho, but close enough to notice.
+				switch(rand(1,4))
+					if(1)
+						. += span_love("[m1] shifting their legs quite a bit...")
+					if(2)
+						. += span_love("I can see [m1] is a bit restless...")
+					if(3)
+						. += span_love("[t_He] seem distracted...")
+					if(4)
+						. += span_love("[m1] restless, for some reason.")
 
 	if(isliving(user) && user != src)
 		var/mob/living/L = user
 		var/final_str = STASTR
+		var/con_check = STACON
+		var/spd_check = STASPD
 		if(HAS_TRAIT(src, TRAIT_DECEIVING_MEEKNESS))
 			final_str = 10
+			con_check = 10
+			spd_check = 10
 		var/strength_diff = final_str - L.STASTR
 		switch(strength_diff)
 			if(5 to INFINITY)
@@ -542,6 +685,25 @@
 				. += span_warning("[t_He] look[p_s()] weaker than I.")
 			if(-INFINITY to -5)
 				. += span_warning("<B>[t_He] look[p_s()] much weaker than I.</B>")
+		if(L.STAPER >= 12)
+			switch(con_check)
+				if(15 to INFINITY)
+					. += span_warning("<B>[t_He] look[p_s()] very vigorous.</B>")
+				if(10 to 15)
+					. += span_warning("[t_He] look[p_s()] vigorous.")
+				if(5 to 10)
+					. += span_warning("[t_He] look[p_s()] sickly.")
+				if(-INFINITY to 5)
+					. += span_warning("<B>[t_He] look[p_s()] very sickly.</B>")
+			switch(spd_check)
+				if(15 to INFINITY)
+					. += span_warning("<B>[t_He] look[p_s()] very swift.</B>")
+				if(10 to 15)
+					. += span_warning("[t_He] look[p_s()] quick.")
+				if(5 to 10)
+					. += span_warning("[t_He] look[p_s()] sluggish.")
+				if(-INFINITY to 5)
+					. += span_warning("<B>[t_He] look[p_s()] very sluggish.</B>")
 
 		if(maniac)
 			var/obj/item/organ/heart/heart = getorganslot(ORGAN_SLOT_HEART)
@@ -560,9 +722,8 @@
 				. += span_notice("Inscryption[N ? " by [N]'s " : ""][W ? "Wonder #[W]" : ""]: [K ? K : ""]")
 
 	if(!obscure_name) // Miniature headshot on examine
-
 		if(headshot_link)
-			. += "<span class='info'><img src=[headshot_link] width=100 height=100/></span>"
+			. += "<img src=[headshot_link] width=100 height=100/>"
 
 	if(Adjacent(user))
 		if(isobserver(user))
@@ -593,9 +754,7 @@
 	if(!appears_dead)
 		if(skipface && user.has_flaw(/datum/charflaw/hunted) && user != src)
 			user.add_stress(/datum/stress_event/hunted)
-
 	if(!obscure_name && (flavortext || headshot_link)) // only show flavor text if there is a flavor text and we show headshot
-
 		. += "<a href='?src=[REF(src)];task=view_flavor_text;'>Examine Closer</a>"
 
 	var/trait_exam = common_trait_examine()
@@ -635,3 +794,16 @@
 			dat += "[new_text]" //dat.Join("\n") doesn't work here, for some reason
 	if(dat.len)
 		return dat.Join("\n")
+
+/mob/living/proc/get_inquisition_text(mob/examiner)
+	var/inquisition_text
+	if(HAS_TRAIT(src, TRAIT_INQUISITION) && HAS_TRAIT(examiner, TRAIT_INQUISITION))
+		inquisition_text = "A Practical of our Psydonic Inquisitorial Sect."
+	if(HAS_TRAIT(src, TRAIT_PURITAN) && HAS_TRAIT(examiner, TRAIT_INQUISITION))
+		inquisition_text = "The Lorde-Inquisitor of our Psydonic Inquisitorial Sect."
+	if(HAS_TRAIT(src, TRAIT_INQUISITION) && HAS_TRAIT(examiner, TRAIT_PURITAN))
+		inquisition_text = "Subordinate to me in the Psydonic Inquisitorial Sect."
+	if(HAS_TRAIT(src, TRAIT_PURITAN) && HAS_TRAIT(examiner, TRAIT_PURITAN))
+		inquisition_text = "The Lorde-Inquisitor of the Sect sent here. That's me."
+
+	return inquisition_text
