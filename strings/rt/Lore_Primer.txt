@@ -2,6 +2,7 @@
 <p> Этот небольшой справочник по вселенной служит введением в текущию историю и мир Dungeon and Dragons(Forgotten Realms/Забытые королевства). <br>
  Хотя это не обязательное чтение, но вы сможете найти эту информацию полезной для ролевой игры своего персонажа. Это касается и всех, кто заинтересован в игре персонажа с более глубоким знанием об окружающем мире. Здесь представлена не вся информация, некоторые секреты по-прежнему хранятся в описаниях предметов, надписях или буклетах — это введение, а не полное руководство.</p><strong><span style="font-size:105%"> Некоторые важные для контекста моменты и временные рамки: </span></strong>
 <hr>
+<<<<<<< HEAD
 <details>
 	<summary><strong><span style="font-size:130%"> Фэйрун, Забытые Королевства, 1496 год. </span></strong></summary>
 <p><strong> - Демоническое вторжение в Андердарке удалось сдержать</strong><br>
@@ -15,6 +16,12 @@
 <p><strong> - Врата Балдура восстанавливается вторжения Иллитидов. </strong><br>
 Город сильно пострадал и всё ещё восстанавливается после миновавшего кризиса. Разрозненные колонии иллитидов и выжившие головастики продолжают скрываться Подземье и отдалённых районах, пытаясь перегруппироваться. </p>
 </details><br>
+=======
+<strong><span style="font-size:105%"> Some quick vocabulary/concepts important to the setting: </span></strong>
+<p><strong> Psydonia </strong> - The world Vanderlin takes place in, named after its creation god, Psydon. It is currently the year 2516, millenia after His death. </p>
+<p><strong> Faience </strong> - The continent Vanderlin takes place in. Shaped by His hand. </p>
+<p><strong> Lux </strong> - The core link of divinity a person holds; the soul. A sliver of Psydon present within each species touched at one point by divine hand. It is said that it carries the power of a single, focused miracle of life- yet its removal dooms a soul never to pass into the underworld. </p>
+>>>>>>> vanderlin/main
 <hr>
 <details>
 	<summary><strong><span style="font-size:130%"> Всеми забытая деревня </span></strong></summary>
